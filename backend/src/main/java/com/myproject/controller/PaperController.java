@@ -1,20 +1,19 @@
-package com.myproject.controller;
-
-import com.myproject.model.Paper;
-import com.myproject.service.PaperService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.util.FileSystemUtils;
 
-import java.io.IOException;
-import java.sql.Date;
-import java.util.List;
-import java.util.Optional;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api/papers")
 public class PaperController {
+
+    private final Path rootLocation = Paths.get("paper-files");
 
     @Autowired
     private PaperService paperService;
@@ -24,38 +23,42 @@ public class PaperController {
                                            @RequestParam("author") String author,
                                            @RequestParam("date") Date date,
                                            @RequestParam("journal") String journal,
-                                           @RequestParam("file") MultipartFile file) {
+                                           @RequestParam("file") MultipartFile file) throws IOException {
         Paper paper = new Paper();
         paper.setTitle(title);
         paper.setAuthor(author);
         paper.setDate(date);
         paper.setJournal(journal);
-        paper.setFileUrl(file.getOriginalFilename());
-        // Handle file saving logic here
+
+        if (!Files.exists(rootLocation)) {
+            Files.createDirectories(rootLocation);
+        }
+
+        String filename = file.getOriginalFilename();
+        if (filename != null) {
+            Path destinationFile = rootLocation.resolve(Paths.get(filename)).normalize().toAbsolutePath();
+            Files.copy(file.getInputStream(), destinationFile);
+
+            paper.setFileUrl(destinationFile.toString());
+        }
+
         Paper savedPaper = paperService.savePaper(paper);
         return ResponseEntity.ok(savedPaper);
     }
 
-    @GetMapping
-    public List<Paper> getAllPapers() {
-        return paperService.getAllPapers();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Paper> getPaperById(@PathVariable Long id) {
-        Optional<Paper> paper = paperService.getPaperById(id);
-        return paper.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePaper(@PathVariable Long id) {
-        paperService.deletePaper(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Paper> updatePaper(@PathVariable Long id, @RequestBody Paper updatedPaper) {
-        Paper paper = paperService.updatePaper(id, updatedPaper);
-        return ResponseEntity.ok(paper);
+    @GetMapping("/{id}/download")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id) throws IOException {
+        Optional<Paper> paperOpt = paperService.getPaperById(id);
+        if (paperOpt.isPresent()) {
+            Paper paper = paperOpt.get();
+            Path filePath = Paths.get(paper.getFileUrl());
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
