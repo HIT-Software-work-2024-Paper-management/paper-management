@@ -1,5 +1,9 @@
+package com.myproject.specification;
+
 import com.myproject.model.Paper;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.sql.Date;
 
 public class PaperSpecification {
 
@@ -31,5 +35,10 @@ public class PaperSpecification {
     public static Specification<Paper> hasCategory(Long categoryId) {
         return (root, query, criteriaBuilder) ->
                 categoryId == null ? null : criteriaBuilder.equal(root.get("category").get("id"), categoryId);
+    }
+
+    public static Specification<Paper> hasType(String type) {
+        return (root, query, criteriaBuilder) ->
+                type == null ? null : criteriaBuilder.equal(root.get("type"), type);
     }
 }

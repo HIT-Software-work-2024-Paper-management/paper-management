@@ -2,7 +2,6 @@ package com.myproject.service;
 
 import com.myproject.model.Paper;
 import com.myproject.repository.PaperRepository;
-import com.myproject.specification.PaperSpecification;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,7 @@ public class PaperService {
             paper.setJournal(updatedPaper.getJournal());
             paper.setCategory(updatedPaper.getCategory());
             paper.setFileUrl(updatedPaper.getFileUrl());
+            paper.setType(updatedPaper.getType());
             paper.setKeywords(updatedPaper.getKeywords());
             return paperRepository.save(paper);
         }).orElseGet(() -> {
@@ -58,7 +58,7 @@ public class PaperService {
     }
 
     public ByteArrayInputStream exportPapersToExcel(List<Paper> papers) throws IOException {
-        String[] columns = {"Title", "Author", "Keywords", "Date", "Journal", "Category"};
+        String[] columns = {"Title", "Author", "Keywords", "Date", "Journal", "Category", "Type"};
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Papers");
@@ -81,6 +81,7 @@ public class PaperService {
                 row.createCell(3).setCellValue(paper.getDate().toString());
                 row.createCell(4).setCellValue(paper.getJournal());
                 row.createCell(5).setCellValue(paper.getCategory().getName());
+                row.createCell(6).setCellValue(paper.getType());
             }
 
             workbook.write(out);

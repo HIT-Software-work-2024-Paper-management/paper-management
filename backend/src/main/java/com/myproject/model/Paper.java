@@ -22,6 +22,8 @@ public class Paper {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    private String type; // 'paper' or 'reference'
+
     // Getters and Setters
 
     public Long getId() {
