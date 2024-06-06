@@ -12,11 +12,15 @@ public class Paper {
     private Long id;
 
     private String title;
-    private String author;
+    private List<String> authors; // 将作者改为列表
     private String keywords;
     private Date date;
     private String journal;
     private String fileUrl;
+
+    private double workloadScore;//工作分数
+    private double impactFactor; // 期刊影响因子
+    private int authorRank; // 作者排名
 
     @ManyToOne
     @JoinColumn(name = "category_id")

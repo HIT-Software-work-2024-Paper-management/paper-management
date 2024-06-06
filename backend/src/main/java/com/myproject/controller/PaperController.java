@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/papers")
@@ -49,18 +50,22 @@ public class PaperController {
 
     @PostMapping("/upload")
     public ResponseEntity<Paper> savePaper(@RequestParam("title") String title,
-                                           @RequestParam("author") String author,
+                                           @RequestParam("authors") String authors, // 使用分号分隔的作者列表
                                            @RequestParam("date") Date date,
                                            @RequestParam("journal") String journal,
                                            @RequestParam("file") MultipartFile file,
                                            @RequestParam("categoryId") Long categoryId,
-                                           @RequestParam("type") String type) throws IOException {
+                                           @RequestParam("type") String type,
+                                           @RequestParam("impactFactor") double impactFactor,
+                                           @RequestParam("authorRank") int authorRank) throws IOException {
         Paper paper = new Paper();
         paper.setTitle(title);
-        paper.setAuthor(author);
+        paper.setAuthors(List.of(authors.split(";"))); // 将分号分隔的作者字符串转换为列表
         paper.setDate(date);
         paper.setJournal(journal);
         paper.setType(type);
+        paper.setImpactFactor(impactFactor);
+        paper.setAuthorRank(authorRank);
 
         Optional<Category> categoryOpt = categoryService.getCategoryById(categoryId);
         if (categoryOpt.isPresent()) {
@@ -160,5 +165,10 @@ public class PaperController {
             }
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @GetMapping("/coauthors")
+    public ResponseEntity<Map<String, Set<String>>> getCoAuthors(@RequestParam("author") String authorName) {
+        Map<String, Set<String>> coAuthors = paperService.getCoAuthors(authorName);
+        return ResponseEntity.ok(coAuthors);
     }
 }

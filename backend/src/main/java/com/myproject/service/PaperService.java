@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 public class PaperService {
 
@@ -39,7 +43,7 @@ public class PaperService {
     public Paper updatePaper(Long id, Paper updatedPaper) {
         return paperRepository.findById(id).map(paper -> {
             paper.setTitle(updatedPaper.getTitle());
-            paper.setAuthor(updatedPaper.getAuthor());
+            paper.setAuthor(updatedPaper.getAuthors());
             paper.setDate(updatedPaper.getDate());
             paper.setJournal(updatedPaper.getJournal());
             paper.setCategory(updatedPaper.getCategory());
@@ -87,5 +91,20 @@ public class PaperService {
             workbook.write(out);
             return new ByteArrayInputStream(out.toByteArray());
         }
+    }
+    public Map<String, Set<String>> getCoAuthors(String authorName) {
+        List<Paper> papers = paperRepository.findByAuthorsContaining(authorName);
+        Map<String, Set<String>> coAuthorMap = new HashMap<>();
+
+        for (Paper paper : papers) {
+            List<String> authors = paper.getAuthors();
+            for (String author : authors) {
+                if (!author.equals(authorName)) {
+                    coAuthorMap.computeIfAbsent(authorName, k -> new HashSet<>()).add(author);
+                }
+            }
+        }
+
+        return coAuthorMap;
     }
 }
