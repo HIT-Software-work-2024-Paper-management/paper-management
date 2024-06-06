@@ -1,12 +1,12 @@
 paper-management
 ├── frontend/                      # 前端代码
 │   ├── public/                    # 公共资源
-│   │   ├── index.html             # 主HTML文件
+│   │   ├── index.html             # 主HTML文件，包含搜索表单和结果显示
 │   ├── src/                       # 源代码
 │   │   ├── css/                   # 样式文件
 │   │   │   └── styles.css         # 主样式文件
 │   │   ├── js/                    # JavaScript 文件
-│   │   │   └── app.js             # 主应用文件
+│   │   │   └── app.js             # 主应用文件，包含搜索和导出功能的逻辑
 │   ├── package.json               # 前端依赖配置（如果使用npm）
 ├── backend/                       # 后端代码
 │   ├── src/                       # 源代码
@@ -14,39 +14,41 @@ paper-management
 │   │   │   ├── java/              # Java 源文件
 │   │   │   │   └── com/
 │   │   │   │       └── myproject/
-│   │   │   │           ├── PaperManagementApplication.java # 主应用文件
-│   │   │   │           ├── controller/    # 控制器
-│   │   │   │           │   ├── PaperController.java
-│   │   │   │           │   └── CategoryController.java
-│   │   │   │           ├── model/         # 数据模型
-│   │   │   │           │   ├── Paper.java
-│   │   │   │           │   └── Category.java
-│   │   │   │           ├── repository/    # 数据库操作
-│   │   │   │           │   ├── PaperRepository.java
-│   │   │   │           │   └── CategoryRepository.java
-│   │   │   │           └── service/       # 服务层
-│   │   │   │               ├── PaperService.java
-│   │   │   │               └── CategoryService.java
+│   │   │   │           ├── PaperManagementApplication.java  # 主应用文件
+│   │   │   │           ├── controller/                      # 控制器
+│   │   │   │           │   ├── PaperController.java         # 处理论文相关请求
+│   │   │   │           │   └── CategoryController.java      # 处理分类相关请求
+│   │   │   │           ├── model/                           # 数据模型
+│   │   │   │           │   ├── Paper.java                   # 论文实体类
+│   │   │   │           │   └── Category.java                # 分类实体类
+│   │   │   │           ├── repository/                      # 数据库操作
+│   │   │   │           │   ├── PaperRepository.java         # 论文数据仓库
+│   │   │   │           │   └── CategoryRepository.java      # 分类数据仓库
+│   │   │   │           ├── service/                         # 服务层
+│   │   │   │           │   ├── PaperService.java            # 处理论文业务逻辑
+│   │   │   │           │   └── CategoryService.java         # 处理分类业务逻辑
+│   │   │   │           └── specification/                   # 规格类
+│   │   │   │               └── PaperSpecification.java      # 论文查询规格
 │   │   ├── resources/
-│   │   │   ├── application.properties     # 配置文件
-│   │   ├── static/                        # 静态资源
-│   │   └── templates/                     # 模板文件
-│   ├── pom.xml                            # Maven 项目配置
-├── paper-files/                           # 用于存储上传的论文文件
+│   │   │   ├── application.properties                       # 配置文件
+│   │   ├── static/                                          # 静态资源
+│   │   └── templates/                                       # 模板文件
+│   ├── pom.xml                                              # Maven 项目配置
+├── paper-files/                                             # 用于存储上传的论文文件
 │   ├── example-paper1.pdf
 │   ├── example-paper2.pdf
-│   └── ...                                # 更多上传的论文文件
-├── database/                              # 数据库相关文件
-│   ├── migrations/                        # 数据库迁移
-│   │   └── categories.sql                 # 分类表SQL文件
-│   ├── seeds/                             # 数据库种子数据
-├── docs/                                  # 文档
-│   ├── README.md                          # 项目说明
-│   ├── API.md                             # API 文档
-│   ├── CONTRIBUTING.md                    # 贡献指南
-├── .gitignore                             # Git忽略文件
-├── LICENSE                                # 许可证
-└── README.md                              # 项目说明
+│   └── ...                                                  # 更多上传的论文文件
+├── database/                                                # 数据库相关文件
+│   ├── migrations/                                          # 数据库迁移
+│   │   └── categories.sql                                   # 分类表SQL文件
+│   ├── seeds/                                               # 数据库种子数据
+├── docs/                                                    # 文档
+│   ├── README.md                                            # 项目说明
+│   ├── API.md                                               # API 文档
+│   ├── CONTRIBUTING.md                                      # 贡献指南
+├── .gitignore                                               # Git忽略文件
+├── LICENSE                                                  # 许可证
+└── README.md                                                # 项目说明
 
 
 程序使用使用 Node.js 20.14 和 Express 框架来构建后端服务，并使用 mySQL作为数据库。

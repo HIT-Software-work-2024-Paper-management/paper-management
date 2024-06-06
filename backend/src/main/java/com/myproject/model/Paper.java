@@ -13,6 +13,7 @@ public class Paper {
 
     private String title;
     private String author;
+    private String keywords;
     private Date date;
     private String journal;
     private String fileUrl;

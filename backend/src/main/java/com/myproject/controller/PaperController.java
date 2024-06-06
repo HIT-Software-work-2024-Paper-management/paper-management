@@ -116,4 +116,25 @@ public class PaperController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+    @GetMapping("/export")
+    public ResponseEntity<Resource> exportPapers(@RequestParam(value = "title", required = false) String title,
+                                                 @RequestParam(value = "author", required = false) String author,
+                                                 @RequestParam(value = "keywords", required = false) String keywords,
+                                                 @RequestParam(value = "date", required = false) Date date,
+                                                 @RequestParam(value = "journal", required = false) String journal,
+                                                 @RequestParam(value = "categoryId", required = false) Long categoryId) throws IOException {
+        Specification<Paper> spec = Specification.where(PaperSpecification.hasTitle(title))
+                .and(PaperSpecification.hasAuthor(author))
+                .and(PaperSpecification.hasKeywords(keywords))
+                .and(PaperSpecification.hasDate(date))
+                .and(PaperSpecification.hasJournal(journal))
+                .and(PaperSpecification.hasCategory(categoryId));
+        List<Paper> papers = paperService.searchPapers(spec);
+        ByteArrayInputStream in = exportPapersToExcel(papers);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=papers.xlsx");
+
+        return ResponseEntity.ok().headers(headers).body(new InputStreamResource(in));
+    }
 }
