@@ -16,13 +16,17 @@ paper-management
 │   │   │   │       └── myproject/
 │   │   │   │           ├── PaperManagementApplication.java # 主应用文件
 │   │   │   │           ├── controller/    # 控制器
-│   │   │   │           │   └── PaperController.java
+│   │   │   │           │   ├── PaperController.java
+│   │   │   │           │   └── CategoryController.java
 │   │   │   │           ├── model/         # 数据模型
-│   │   │   │           │   └── Paper.java
+│   │   │   │           │   ├── Paper.java
+│   │   │   │           │   └── Category.java
 │   │   │   │           ├── repository/    # 数据库操作
-│   │   │   │           │   └── PaperRepository.java
+│   │   │   │           │   ├── PaperRepository.java
+│   │   │   │           │   └── CategoryRepository.java
 │   │   │   │           └── service/       # 服务层
-│   │   │   │               └── PaperService.java
+│   │   │   │               ├── PaperService.java
+│   │   │   │               └── CategoryService.java
 │   │   ├── resources/
 │   │   │   ├── application.properties     # 配置文件
 │   │   ├── static/                        # 静态资源
@@ -34,6 +38,7 @@ paper-management
 │   └── ...                                # 更多上传的论文文件
 ├── database/                              # 数据库相关文件
 │   ├── migrations/                        # 数据库迁移
+│   │   └── categories.sql                 # 分类表SQL文件
 │   ├── seeds/                             # 数据库种子数据
 ├── docs/                                  # 文档
 │   ├── README.md                          # 项目说明
@@ -42,6 +47,7 @@ paper-management
 ├── .gitignore                             # Git忽略文件
 ├── LICENSE                                # 许可证
 └── README.md                              # 项目说明
+
 
 程序使用使用 Node.js 20.14 和 Express 框架来构建后端服务，并使用 mySQL作为数据库。
 前端程序使用css、html和JavaScript来构建。后端使用Java语言来编写。

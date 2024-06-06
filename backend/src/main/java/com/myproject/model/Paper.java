@@ -17,6 +17,10 @@ public class Paper {
     private String journal;
     private String fileUrl;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     // Getters and Setters
 
     public Long getId() {

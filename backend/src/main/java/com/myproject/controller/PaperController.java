@@ -1,13 +1,23 @@
+import com.myproject.model.Paper;
+import com.myproject.model.Category;
+import com.myproject.service.PaperService;
+import com.myproject.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileSystemUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Date;
+import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/papers")
@@ -18,17 +28,39 @@ public class PaperController {
     @Autowired
     private PaperService paperService;
 
+    @Autowired
+    private CategoryService categoryService;
+
+    @PostConstruct
+    public void init() {
+        try {
+            if (!Files.exists(rootLocation)) {
+                Files.createDirectories(rootLocation);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create upload directory!", e);
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Paper> savePaper(@RequestParam("title") String title,
                                            @RequestParam("author") String author,
                                            @RequestParam("date") Date date,
                                            @RequestParam("journal") String journal,
-                                           @RequestParam("file") MultipartFile file) throws IOException {
+                                           @RequestParam("file") MultipartFile file,
+                                           @RequestParam("categoryId") Long categoryId) throws IOException {
         Paper paper = new Paper();
         paper.setTitle(title);
         paper.setAuthor(author);
         paper.setDate(date);
         paper.setJournal(journal);
+
+        Optional<Category> categoryOpt = categoryService.getCategoryById(categoryId);
+        if (categoryOpt.isPresent()) {
+            paper.setCategory(categoryOpt.get());
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
 
         if (!Files.exists(rootLocation)) {
             Files.createDirectories(rootLocation);
@@ -44,6 +76,29 @@ public class PaperController {
 
         Paper savedPaper = paperService.savePaper(paper);
         return ResponseEntity.ok(savedPaper);
+    }
+
+    @GetMapping
+    public List<Paper> getAllPapers() {
+        return paperService.getAllPapers();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Paper> getPaperById(@PathVariable Long id) {
+        Optional<Paper> paper = paperService.getPaperById(id);
+        return paper.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePaper(@PathVariable Long id) {
+        paperService.deletePaper(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Paper> updatePaper(@PathVariable Long id, @RequestBody Paper updatedPaper) {
+        Paper paper = paperService.updatePaper(id, updatedPaper);
+        return ResponseEntity.ok(paper);
     }
 
     @GetMapping("/{id}/download")
