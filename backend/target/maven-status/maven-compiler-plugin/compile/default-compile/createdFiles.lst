@@ -1,5 +1,10 @@
-com\myproject\service\PaperService.class
-com\myproject\PaperManagementApplication.class
 com\myproject\model\Paper.class
 com\myproject\repository\PaperRepository.class
+com\myproject\repository\CategoryRepository.class
+com\myproject\service\PaperService.class
+com\myproject\controller\CategoryController.class
+com\myproject\model\Category.class
+com\myproject\service\CategoryService.class
+com\myproject\PaperManagementApplication.class
 com\myproject\controller\PaperController.class
+com\myproject\specification\PaperSpecification.class

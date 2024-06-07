@@ -13,8 +13,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,7 +41,7 @@ public class PaperService {
     public Paper updatePaper(Long id, Paper updatedPaper) {
         return paperRepository.findById(id).map(paper -> {
             paper.setTitle(updatedPaper.getTitle());
-            paper.setAuthor(updatedPaper.getAuthors());
+            paper.setAuthors(updatedPaper.getAuthors());
             paper.setDate(updatedPaper.getDate());
             paper.setJournal(updatedPaper.getJournal());
             paper.setCategory(updatedPaper.getCategory());
@@ -62,7 +60,7 @@ public class PaperService {
     }
 
     public ByteArrayInputStream exportPapersToExcel(List<Paper> papers) throws IOException {
-        String[] columns = {"Title", "Author", "Keywords", "Date", "Journal", "Category", "Type"};
+        String[] columns = {"Title", "Authors", "Keywords", "Date", "Journal", "Category", "Type"};
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Papers");
@@ -80,7 +78,7 @@ public class PaperService {
                 Row row = sheet.createRow(rowIdx++);
 
                 row.createCell(0).setCellValue(paper.getTitle());
-                row.createCell(1).setCellValue(paper.getAuthor());
+                row.createCell(1).setCellValue(String.join("; ", paper.getAuthors()));
                 row.createCell(2).setCellValue(paper.getKeywords());
                 row.createCell(3).setCellValue(paper.getDate().toString());
                 row.createCell(4).setCellValue(paper.getJournal());
@@ -92,6 +90,7 @@ public class PaperService {
             return new ByteArrayInputStream(out.toByteArray());
         }
     }
+
     public Map<String, Set<String>> getCoAuthors(String authorName) {
         List<Paper> papers = paperRepository.findByAuthorsContaining(authorName);
         Map<String, Set<String>> coAuthorMap = new HashMap<>();
