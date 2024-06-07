@@ -1,13 +1,18 @@
 paper-management
-├── frontend/                      # 前端代码
+├── frontend/
 │   ├── public/                    # 公共资源
-│   │   ├── index.html             # 主HTML文件，包含搜索表单和结果显示
-│   ├── src/                       # 源代码
+│   │   ├── index.html             # 主HTML文件
+│   │   ├── paper_classification.html
+│   │   ├── paper_management.html
+│   │   ├── paper_network.html
+│   │   ├── paper_query.html
+│   │   ├── paper_scorereference_management.html
 │   │   ├── css/                   # 样式文件
 │   │   │   └── styles.css         # 主样式文件
 │   │   ├── js/                    # JavaScript 文件
-│   │   │   └── app.js             # 主应用文件，包含搜索和导出功能的逻辑
-│   ├── package.json               # 前端依赖配置（如果使用npm）
+│   │   │   └── app.js             # 主应用文件
+│   ├── server.js                  # 用于启动前端服务器
+│   ├── package.json               # 前端依赖配置（使用 npm）
 ├── backend/                       # 后端代码
 │   ├── src/                       # 源代码
 │   │   ├── main/
