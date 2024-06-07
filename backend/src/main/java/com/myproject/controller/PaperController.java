@@ -1,3 +1,5 @@
+package com.myproject.controller;
+
 import com.myproject.model.Paper;
 import com.myproject.model.Category;
 import com.myproject.service.PaperService;
@@ -13,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.data.jpa.domain.Specification; // 确保导入 Specification
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -24,6 +26,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
+import java.util.Set; // 确保导入 Set
 
 @RestController
 @RequestMapping("/api/papers")
@@ -166,6 +169,7 @@ public class PaperController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
     @GetMapping("/coauthors")
     public ResponseEntity<Map<String, Set<String>>> getCoAuthors(@RequestParam("author") String authorName) {
         Map<String, Set<String>> coAuthors = paperService.getCoAuthors(authorName);

@@ -2,6 +2,7 @@ package com.myproject.model;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "papers")
@@ -12,6 +13,7 @@ public class Paper {
     private Long id;
 
     private String title;
+    @ElementCollection
     private List<String> authors; // 将作者改为列表
     private String keywords;
     private Date date;
@@ -46,12 +48,20 @@ public class Paper {
         this.title = title;
     }
 
-    public String getAuthor() {
-        return author;
+    public List<String> getAuthors() {
+        return authors;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setAuthors(List<String> authors) {
+        this.authors = authors;
+    }
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
     }
 
     public Date getDate() {
@@ -76,5 +86,45 @@ public class Paper {
 
     public void setFileUrl(String fileUrl) {
         this.fileUrl = fileUrl;
+    }
+
+    public double getWorkloadScore() {
+        return workloadScore;
+    }
+
+    public void setWorkloadScore(double workloadScore) {
+        this.workloadScore = workloadScore;
+    }
+
+    public double getImpactFactor() {
+        return impactFactor;
+    }
+
+    public void setImpactFactor(double impactFactor) {
+        this.impactFactor = impactFactor;
+    }
+
+    public int getAuthorRank() {
+        return authorRank;
+    }
+
+    public void setAuthorRank(int authorRank) {
+        this.authorRank = authorRank;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
