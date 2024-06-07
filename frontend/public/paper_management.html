@@ -1,29 +1,39 @@
 <!DOCTYPE html>
-//还未完成
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paper Management</title>
+    <title>Paper Management System</title>
     <link rel="stylesheet" href="../src/css/styles.css">
 </head>
 <body>
 <h1>Paper Management System</h1>
 <div id="app">
     <form id="paper-form">
+        <h2>Uploaded Papers</h2>
         <label for="title">Title:</label>
         <input type="text" id="title" name="title" required>
-        <label for="author">Author:</label>
-        <input type="text" id="author" name="author" required>
+        <label for="authors">Authors (separated by semicolons):</label>
+        <input type="text" id="authors" name="authors" required>
         <label for="date">Date:</label>
         <input type="date" id="date" name="date" required>
         <label for="journal">Journal:</label>
         <input type="text" id="journal" name="journal" required>
         <label for="file">File:</label>
         <input type="file" id="file" name="file" required>
+        <label for="categoryId">Category ID:</label>
+        <input type="number" id="categoryId" name="categoryId" required>
+        <label for="type">Type:</label>
+        <input type="text" id="type" name="type" required>
+        <label for="impactFactor">Impact Factor:</label>
+        <input type="number" step="0.01" id="impactFactor" name="impactFactor" required>
+        <label for="authorRank">Author Rank:</label>
+        <input type="number" id="authorRank" name="authorRank" required>
         <button type="submit">Upload</button>
     </form>
-    <h2>Uploaded Papers</h2>
+    <h2>view-papers-button</h2>
+    <button id="view-papers-button">View Uploaded Papers</button>
+
     <ul id="paper-list"></ul>
 </div>
 <script src="../src/js/app.js"></script>
