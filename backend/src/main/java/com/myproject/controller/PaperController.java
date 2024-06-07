@@ -61,6 +61,18 @@ public class PaperController {
                                            @RequestParam("type") String type,
                                            @RequestParam("impactFactor") double impactFactor,
                                            @RequestParam("authorRank") int authorRank) throws IOException {
+        // 打印请求参数
+
+        System.out.println("Title: " + title);
+        System.out.println("Authors: " + authors);
+        System.out.println("Date: " + date);
+        System.out.println("Journal: " + journal);
+        System.out.println("CategoryId: " + categoryId);
+        System.out.println("Type: " + type);
+        System.out.println("ImpactFactor: " + impactFactor);
+        System.out.println("AuthorRank: " + authorRank);
+        System.out.println("File: " + file.getOriginalFilename());
+
         Paper paper = new Paper();
         paper.setTitle(title);
         paper.setAuthors(List.of(authors.split(";"))); // 将分号分隔的作者字符串转换为列表
@@ -69,6 +81,7 @@ public class PaperController {
         paper.setType(type);
         paper.setImpactFactor(impactFactor);
         paper.setAuthorRank(authorRank);
+        System.out.println("Arrived here. ");
 
         Optional<Category> categoryOpt = categoryService.getCategoryById(categoryId);
         if (categoryOpt.isPresent()) {
@@ -76,6 +89,7 @@ public class PaperController {
         } else {
             return ResponseEntity.badRequest().build();
         }
+
 
         String filename = file.getOriginalFilename();
         if (filename != null) {

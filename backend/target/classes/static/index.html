@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1>Paper Management System</h1>
+<div id="app">
+    <ul>
+        <li><button onclick="navigateTo('paper_management.html')">发表论文管理</button></li>
+        <li><button onclick="navigateTo('paper_classification.html')">论文分类管理</button></li>
+        <li><button onclick="navigateTo('paper_query.html')">论文查询</button></li>
+        <li><button onclick="navigateTo('reference_management.html')">参考文献管理</button></li>
+        <li><button onclick="navigateTo('paper_score.html')">计算论文分数</button></li>
+        <li><button onclick="navigateTo('paper_network.html')">论文关系网络</button></li>
+    </ul>
+</div>
+<script>
+    function navigateTo(url) {
+        window.location.href = url;
+    }
+</script>
+</body>
+</html>

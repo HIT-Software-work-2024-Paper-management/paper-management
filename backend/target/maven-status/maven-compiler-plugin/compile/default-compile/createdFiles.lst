@@ -1,0 +1,6 @@
+com\myproject\repository\PaperRepository.class
+com\myproject\service\PaperService.class
+com\myproject\config\WebConfig.class
+com\myproject\PaperManagementApplication.class
+com\myproject\controller\PaperController.class
+com\myproject\model\Paper.class
