@@ -93,11 +93,17 @@
                 .catch(error => console.error('Error fetching paper query:', error));
         });
 
-        function createPaperListItem(paper) {
-            const listItem = document.createElement('li');
-            listItem.textContent = `${paper.title} (${paper.authors.join(", ")}, ${paper.date})`;
-            return listItem;
-        }
+function createPaperListItem(paper) {
+    const listItem = document.createElement('li');
+
+    // 检查并处理 paper 对象的每个字段是否为空或未定义
+    const title = paper.title || 'No Title';
+    const authors = Array.isArray(paper.authors) ? paper.authors.join(", ") : 'No Authors';
+    const date = paper.date || 'No Date';
+
+    listItem.textContent = `${title} (${authors}, ${date})`;
+    return listItem;
+}
     });
 </script>
 

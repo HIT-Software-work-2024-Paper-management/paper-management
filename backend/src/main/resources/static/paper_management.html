@@ -104,7 +104,7 @@
                     const updatedFormData = new FormData(form);
                     const updatedPaper = {
                         title: updatedFormData.get('title'),
-                        authors: updatedFormData.get('authors').split(';'),
+                        authors: updatedFormData.get('authors'),
                         date: updatedFormData.get('date'),
                         journal: updatedFormData.get('journal'),
                         fileUrl: listItem.querySelector('.download').getAttribute('data-file-url'),
@@ -124,7 +124,7 @@
                     .then(response => response.json())
                     .then(data => {
                         spans[0].textContent = `Title: ${data.title}`;
-                        spans[1].textContent = `Authors: ${data.authors.join('; ')}`;
+                        spans[1].textContent = `Authors: ${data.authors}`;
                         spans[2].textContent = `Date: ${data.date}`;
                         spans[3].textContent = `Journal: ${data.journal}`;
                         spans[4].textContent = `Category: ${data.category.name}`;
@@ -160,7 +160,7 @@
             listItem.setAttribute('data-id', paper.id);
             listItem.innerHTML = `
                 <span>Title: ${paper.title}</span>,
-                <span>Authors: ${paper.authors.join('; ')}</span>,
+                <span>Authors: ${paper.authors}</span>,
                 <span>Date: ${paper.date}</span>,
                 <span>Journal: ${paper.journal}</span>,
                 <span>Category: ${paper.category.name}</span>,
