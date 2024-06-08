@@ -1,10 +1,12 @@
 package com.myproject.model;
 
 import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "Categories")
 public class Category {
 
     @Id
@@ -15,13 +17,14 @@ public class Category {
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
+    @JsonIgnore
     private Category parent;
 
-    @OneToMany(mappedBy = "parent")
-    private List<Category> children;
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Category> children = new ArrayList<>();
 
-    // Getters and Setters
-
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -52,5 +55,15 @@ public class Category {
 
     public void setChildren(List<Category> children) {
         this.children = children;
+    }
+
+    public void addChild(Category child) {
+        children.add(child);
+        child.setParent(this);
+    }
+
+    public void removeChild(Category child) {
+        children.remove(child);
+        child.setParent(null);
     }
 }

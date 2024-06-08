@@ -1,10 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>论文分类管理</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
 
+<body>
+<h1>论文分类管理</h1>
+<div>
+    <form id="paper-classification-form">
+        <h2>上传论文分类</h2>
+        <label for="categoryName">分类名称:</label>
+        <input type="text" id="categoryName" name="categoryName" required>
+        <label for="categoryParent">父分类:</label>
+        <input type="text" id="categoryParent" name="categoryParent">
+        <button type="submit">上传</button>
+    </form>
+    <h2>查看分类</h2>
+    <button id="view-categories-button">查看分类</button>
+    <ul id="category-list"></ul>
+</div>
 </body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('paper-classification-form');
+        const categoryList = document.getElementById('category-list');
+        const viewCategoriesButton = document.getElementById('view-categories-button');
+
+        // Fetch and display all categories when "View Categories" button is clicked
+        viewCategoriesButton.addEventListener('click', () => {
+            categoryList.innerHTML = ''; // Clear the current list
+            fetchCategories();
+        });
+
+        function fetchCategories() {
+            fetch('/api/categories')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    data.forEach(category => {
+                        const listItem = createCategoryListItem(category);
+                        categoryList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching categories:', error));
+        }
+
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+            const formData = new FormData(form);
+
+            fetch('/api/categories', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const listItem = createCategoryListItem(data);
+                    categoryList.appendChild(listItem);
+                    form.reset();
+                    alert('Category added successfully!');
+                })
+                .catch(error => console.error('Error uploading category:', error));
+        });
+
+        function createCategoryListItem(category) {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+            <strong>${category.name}</strong>  (Parent: ${category.parentName || 'None'})
+        `;
+            return listItem;
+        }
+    });
+</script>
+
 </html>

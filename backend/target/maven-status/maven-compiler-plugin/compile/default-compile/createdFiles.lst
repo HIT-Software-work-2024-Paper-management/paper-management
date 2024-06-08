@@ -8,4 +8,5 @@ com\myproject\controller\PaperController.class
 com\myproject\model\Paper.class
 com\myproject\model\Category.class
 com\myproject\service\CategoryService.class
+com\myproject\dto\CategoryDTO.class
 com\myproject\specification\PaperSpecification.class
