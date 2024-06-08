@@ -4,10 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ad1ff90-0c1a-435e-843b-ff4b2a3c610c" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/PaperController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/PaperController.java" afterDir="false" />
+    <list default="true" id="0ad1ff90-0c1a-435e-843b-ff4b2a3c610c" name="更改" comment="论修了点bug，可以 mvn spring-boot:run&#10;了">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/logs/spring.log" beforeDir="false" afterPath="$PROJECT_DIR$/backend/logs/spring.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/logs/spring.log.2024-06-07.0.gz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/model/Category.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/model/Category.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/service/CategoryService.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/service/CategoryService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,22 +21,22 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2hZdX5IuCJxWhHmKzCe0KZPWUhp" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="默认任务">
@@ -42,6 +46,30 @@
       <option name="presentableId" value="Default" />
       <updated>1717805571385</updated>
     </task>
+    <task id="LOCAL-00001" summary="论修了点bug，可以 mvn spring-boot:run&#10;了">
+      <option name="closed" value="true" />
+      <created>1717806606925</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1717806606925</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="论修了点bug，可以 mvn spring-boot:run&#10;了" />
+    <option name="LAST_COMMIT_MESSAGE" value="论修了点bug，可以 mvn spring-boot:run&#10;了" />
   </component>
 </project>
