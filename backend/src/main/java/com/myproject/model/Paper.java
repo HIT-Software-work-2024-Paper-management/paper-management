@@ -2,7 +2,6 @@ package com.myproject.model;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "papers")
@@ -13,14 +12,13 @@ public class Paper {
     private Long id;
 
     private String title;
-    @ElementCollection
-    private List<String> authors; // 将作者改为列表
+    private String authors; // 将作者改为字符串
     private String keywords;
     private Date date;
     private String journal;
     private String fileUrl;
 
-    private double workloadScore;//工作分数
+    private double workloadScore; // 工作分数
     private double impactFactor; // 期刊影响因子
     private int authorRank; // 作者排名
 
@@ -48,11 +46,11 @@ public class Paper {
         this.title = title;
     }
 
-    public List<String> getAuthors() {
+    public String getAuthors() {
         return authors;
     }
 
-    public void setAuthors(List<String> authors) {
+    public void setAuthors(String authors) {
         this.authors = authors;
     }
 

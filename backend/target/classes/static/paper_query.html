@@ -1,10 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>论文查询</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
 
+<body>
+<h1>论文查询</h1>
+<!-- 支持按作者、论文名称、关键字、时间、刊物、类别等多种方式进行查询。 -->
+<div>
+    <form id="paper-query-form">
+        <h2>查询论文</h2>
+        <label for="authorName">作者姓名:</label>
+        <input type="text" id="authorName" name="authorName">
+        <label for="paperName">论文名称:</label>
+        <input type="text" id="paperName" name="paperName">
+        <label for="keyword">关键字:</label>
+        <input type="text" id="keyword" name="keyword">
+        <label for="time">时间:</label>
+        <input type="date" id="time" name="time">
+        <label for="publication">刊物:</label>
+        <input type="text" id="publication" name="publication">
+        <label for="category">类别:</label>
+        <input type="text" id="category" name="category">
+
+        <button type="submit">查询</button>
+    </form>
+    <h2>查询结果</h2>
+    <ul id="paper-query-list"></ul>
+</div>
 </body>
+<script>
+    // 检查输入是否全空
+    function checkEmpty() {
+        var authorName = document.getElementById('authorName').value;
+        var paperName = document.getElementById('paperName').value;
+        var keyword = document.getElementById('keyword').value;
+        var time = document.getElementById('time').value;
+        var publication = document.getElementById('publication').value;
+        var category = document.getElementById('category').value;
+        if (authorName == "" && paperName == "" && keyword == "" && time == "" && publication == "" && category == "" ) {
+            alert("请输入查询条件！");
+            return false;
+        }
+        return true;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('paper-query-form');
+        const paperQueryList = document.getElementById('paper-query-list');
+
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+            if (!checkEmpty()) {
+                return;
+            }
+            const formData = new FormData(form);
+            const authorName = formData.get('authorName');
+            const paperName = formData.get('paperName');
+            const keyword = formData.get('keyword');
+            const time = formData.get('time');
+            const publication = formData.get('publication');
+            const category = formData.get('category');
+
+            paperQueryList.innerHTML = ''; // Clear the current list
+
+            let query = `/api/papers/search?authors=${authorName}&title=${paperName}&keywords=${keyword}&journal=${publication}&categoryId=${category}`;
+            if (time) {
+                query += `&date=${time}`;
+            }
+
+            console.log(`Sending request with parameters:
+                authors=${authorName}, title=${paperName}, keywords=${keyword},
+                date=${time}, journal=${publication}, categoryId=${category}`);
+
+            fetch(query)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Received data:", data);
+                    data.forEach(paper => {
+                        const listItem = createPaperListItem(paper);
+                        paperQueryList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching paper query:', error));
+        });
+
+        function createPaperListItem(paper) {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${paper.title} (${paper.authors.join(", ")}, ${paper.date})`;
+            return listItem;
+        }
+    });
+</script>
+
 </html>

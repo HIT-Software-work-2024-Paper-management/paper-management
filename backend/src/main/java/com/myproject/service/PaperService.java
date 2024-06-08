@@ -56,7 +56,11 @@ public class PaperService {
     }
 
     public List<Paper> searchPapers(Specification<Paper> spec) {
-        return paperRepository.findAll(spec);
+        List<Paper> results = paperRepository.findAll(spec);
+
+        System.out.println("paperserver Search results: " + results.size());
+        results.forEach(paper -> System.out.println(paper.getTitle()));
+        return results;
     }
 
     public ByteArrayInputStream exportPapersToExcel(List<Paper> papers) throws IOException {
@@ -78,7 +82,7 @@ public class PaperService {
                 Row row = sheet.createRow(rowIdx++);
 
                 row.createCell(0).setCellValue(paper.getTitle());
-                row.createCell(1).setCellValue(String.join("; ", paper.getAuthors()));
+                row.createCell(1).setCellValue(paper.getAuthors()); // 修改为直接使用字符串
                 row.createCell(2).setCellValue(paper.getKeywords());
                 row.createCell(3).setCellValue(paper.getDate().toString());
                 row.createCell(4).setCellValue(paper.getJournal());
@@ -96,14 +100,15 @@ public class PaperService {
         Map<String, Set<String>> coAuthorMap = new HashMap<>();
 
         for (Paper paper : papers) {
-            List<String> authors = paper.getAuthors();
-            for (String author : authors) {
-                if (!author.equals(authorName)) {
-                    coAuthorMap.computeIfAbsent(authorName, k -> new HashSet<>()).add(author);
+            String[] authorsArray = paper.getAuthors().split(";");
+            for (String author : authorsArray) {
+                if (!author.trim().equals(authorName)) {
+                    coAuthorMap.computeIfAbsent(authorName, k -> new HashSet<>()).add(author.trim());
                 }
             }
         }
 
         return coAuthorMap;
     }
+
 }

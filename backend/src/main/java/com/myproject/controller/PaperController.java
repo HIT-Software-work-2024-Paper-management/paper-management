@@ -76,7 +76,7 @@ public class PaperController {
 
         Paper paper = new Paper();
         paper.setTitle(title);
-        paper.setAuthors(List.of(authors.split(";"))); // 将分号分隔的作者字符串转换为列表
+        paper.setAuthors(authors); // 直接保存字符串形式的作者
         paper.setDate(date);
         paper.setJournal(journal);
         paper.setType(type);
@@ -129,32 +129,42 @@ public class PaperController {
 
     @GetMapping("/search")
     public List<Paper> searchPapers(@RequestParam(value = "title", required = false) String title,
-                                    @RequestParam(value = "author", required = false) String author,
+                                    @RequestParam(value = "authors", required = false) String authors,
                                     @RequestParam(value = "keywords", required = false) String keywords,
                                     @RequestParam(value = "date", required = false) Date date,
                                     @RequestParam(value = "journal", required = false) String journal,
-                                    @RequestParam(value = "categoryId", required = false) Long categoryId,
-                                    @RequestParam(value = "type", required = false) String type) {
+                                    @RequestParam(value = "categoryId", required = false) Long categoryId) {
+
+        // 打印各个传入的参数
+        System.out.println("title=" + title);
+        System.out.println("authors=" + authors);
+        System.out.println("keywords=" + keywords);
+        System.out.println("journal=" + journal);
+        System.out.println("categoryId=" + categoryId);
+
+
         Specification<Paper> spec = Specification.where(PaperSpecification.hasTitle(title))
-                .and(PaperSpecification.hasAuthor(author))
+                .and(PaperSpecification.hasAuthors(authors))
                 .and(PaperSpecification.hasKeywords(keywords))
                 .and(PaperSpecification.hasDate(date))
                 .and(PaperSpecification.hasJournal(journal))
-                .and(PaperSpecification.hasCategory(categoryId))
-                .and(PaperSpecification.hasType(type));
-        return paperService.searchPapers(spec);
+                .and(PaperSpecification.hasCategory(categoryId));
+
+        List<Paper> results = paperService.searchPapers(spec);
+        System.out.println("Query Results: " + results.size() + " papers found.");
+        return results;
     }
 
     @GetMapping("/export")
     public ResponseEntity<Resource> exportPapers(@RequestParam(value = "title", required = false) String title,
-                                                 @RequestParam(value = "author", required = false) String author,
+                                                 @RequestParam(value = "authors", required = false) String authors,
                                                  @RequestParam(value = "keywords", required = false) String keywords,
                                                  @RequestParam(value = "date", required = false) Date date,
                                                  @RequestParam(value = "journal", required = false) String journal,
                                                  @RequestParam(value = "categoryId", required = false) Long categoryId,
                                                  @RequestParam(value = "type", required = false) String type) throws IOException {
         Specification<Paper> spec = Specification.where(PaperSpecification.hasTitle(title))
-                .and(PaperSpecification.hasAuthor(author))
+                .and(PaperSpecification.hasAuthors(authors))
                 .and(PaperSpecification.hasKeywords(keywords))
                 .and(PaperSpecification.hasDate(date))
                 .and(PaperSpecification.hasJournal(journal))

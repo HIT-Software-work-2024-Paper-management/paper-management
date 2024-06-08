@@ -1,10 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>论文关系网络</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
 
+<body>
+<h1>论文关系网络</h1>
+<!-- 作者和哪些人共同发表过论文 -->
+<div>
+    <form id="paper-network-form">
+        <h2>查询作者关系</h2>
+        <label for="authorName">作者姓名:</label>
+        <input type="text" id="authorName" name="authorName" required>
+        <button type="submit">查询</button>
+    </form>
+    <h2>查询结果</h2>
+    <ul id="author-network-list"></ul>
+</div>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('paper-network-form');
+        const authorNetworkList = document.getElementById('author-network-list');
+
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const authorName = formData.get('authorName');
+            authorNetworkList.innerHTML = ''; // Clear the current list
+            fetch(`/api/authors/${authorName}/network`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    data.forEach(author => {
+                        const listItem = createAuthorListItem(author);
+                        authorNetworkList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching author network:', error));
+        });
+
+        function createAuthorListItem(author) {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${author.name} (${author.paperCount} papers)`;
+            return listItem;
+        }
+    });
+</script>
+
 </html>
