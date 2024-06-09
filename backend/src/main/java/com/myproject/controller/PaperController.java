@@ -179,6 +179,7 @@ public class PaperController {
         return ResponseEntity.ok().headers(headers).body(new InputStreamResource(in));
     }
 
+
     @GetMapping("/{id}/download")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id) throws IOException {
         Optional<Paper> paperOpt = paperService.getPaperById(id);

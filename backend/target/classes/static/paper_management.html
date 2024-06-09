@@ -149,10 +149,10 @@
                 .catch(error => console.error('Error deleting paper:', error));
             }
 
-            if (event.target.classList.contains('download')) {
-                const fileUrl = listItem.querySelector('.download').getAttribute('data-file-url');
-                window.open(fileUrl, '_blank');
-            }
+    if (event.target.classList.contains('download')) {
+        const fileUrl = `/api/papers/${paperId}/download`; // 构建下载文件的 URL
+        window.open(fileUrl, '_blank'); // 在新窗口中打开文件 URL
+    }
         });
 
         function createPaperListItem(paper) {
