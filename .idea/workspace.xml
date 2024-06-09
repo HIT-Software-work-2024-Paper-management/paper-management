@@ -4,12 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ad1ff90-0c1a-435e-843b-ff4b2a3c610c" name="更改" comment="可以删除论文了">
+    <list default="true" id="0ad1ff90-0c1a-435e-843b-ff4b2a3c610c" name="更改" comment="可以下载论文了">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/logs/spring.log" beforeDir="false" afterPath="$PROJECT_DIR$/backend/logs/spring.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/CategoryController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/PaperController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/PaperController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/service/CategoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/service/CategoryService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/resources/static/paper_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/static/paper_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/controller/PaperController.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/controller/PaperController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/controller/CategoryController.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/controller/CategoryController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/service/CategoryService.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/service/CategoryService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/target/classes/static/paper_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/static/paper_management.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar.original" afterDir="false" />
@@ -111,7 +114,15 @@
       <option name="project" value="LOCAL" />
       <updated>1717898560050</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="可以下载论文了">
+      <option name="closed" value="true" />
+      <created>1717899552359</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1717899552359</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -131,6 +142,7 @@
     <MESSAGE value="可以上传和查询分类了" />
     <MESSAGE value="论文查询" />
     <MESSAGE value="可以删除论文了" />
-    <option name="LAST_COMMIT_MESSAGE" value="可以删除论文了" />
+    <MESSAGE value="可以下载论文了" />
+    <option name="LAST_COMMIT_MESSAGE" value="可以下载论文了" />
   </component>
 </project>

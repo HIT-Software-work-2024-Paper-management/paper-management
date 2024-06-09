@@ -35,6 +35,10 @@ public class CategoryService {
         return dto;
     }
 
+    public List<Category> getAllCategoriesid() {
+        return categoryRepository.findAll();
+    }
+
     public Optional<Category> getCategoryById(Long id) {
         return categoryRepository.findById(id);
     }

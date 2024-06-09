@@ -75,6 +75,23 @@ public class CategoryController {
         }
     }
 
+    @GetMapping("/searchid")
+    public ResponseEntity<List<Category>> getAllCategoriesid() {
+
+        try {
+
+            List<Category> categories = categoryService.getAllCategoriesid();
+
+            return ResponseEntity.ok().body(categories);
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+        }
+
+    }
+
 
 
     @GetMapping("/{id}")

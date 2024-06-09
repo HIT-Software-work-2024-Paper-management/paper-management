@@ -196,9 +196,4 @@ public class PaperController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-//    @GetMapping("/coauthors")
-//    public ResponseEntity<Map<String, Set<String>>> getCoAuthors(@RequestParam("author") String authorName) {
-//        Map<String, Set<String>> coAuthors = paperService.getCoAuthors(authorName);
-//        return ResponseEntity.ok(coAuthors);
-//    }
 }
