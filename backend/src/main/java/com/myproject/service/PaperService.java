@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.*;
@@ -35,7 +36,18 @@ public class PaperService {
     }
 
     public void deletePaper(Long id) {
-        paperRepository.deleteById(id);
+        Optional<Paper> paperOptional = paperRepository.findById(id);
+        if (paperOptional.isPresent()) {
+            Paper paper = paperOptional.get();
+            // 删除文件
+            String fileUrl = paper.getFileUrl(); // 假设文件路径存储在 filePath 字段中
+            File file = new File(fileUrl);
+            if (file.exists()) {
+                file.delete();
+            }
+            // 删除数据库记录
+            paperRepository.deleteById(id);
+        }
     }
 
     public Paper updatePaper(Long id, Paper updatedPaper) {

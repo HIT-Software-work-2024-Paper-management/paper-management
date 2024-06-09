@@ -17,6 +17,7 @@ public class Paper {
     private Date date;
     private String journal;
     private String fileUrl;
+//    private String filePath;
 
     private double workloadScore; // 工作分数
     private double impactFactor; // 期刊影响因子
@@ -125,4 +126,12 @@ public class Paper {
     public void setType(String type) {
         this.type = type;
     }
+
+//    public String getFilePath() {
+//        return filePath;
+//    }
+//
+//    public void setFilePath(String filePath) {
+//        this.filePath = filePath;
+//    }
 }

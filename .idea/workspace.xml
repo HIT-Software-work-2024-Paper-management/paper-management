@@ -4,13 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ad1ff90-0c1a-435e-843b-ff4b2a3c610c" name="更改" comment="可以上传和查询分类了">
+    <list default="true" id="0ad1ff90-0c1a-435e-843b-ff4b2a3c610c" name="更改" comment="论文查询">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/logs/spring.log" beforeDir="false" afterPath="$PROJECT_DIR$/backend/logs/spring.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/static/paper_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/static/paper_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/static/paper_query.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/static/paper_query.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/target/classes/static/paper_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/static/paper_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/target/classes/static/paper_query.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/static/paper_query.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/PaperController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/PaperController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/model/Paper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/model/Paper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/service/PaperService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/service/PaperService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/static/paper_network.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/static/paper_network.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/controller/PaperController.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/controller/PaperController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/model/Paper.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/model/Paper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/service/PaperService.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/service/PaperService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/classes/static/paper_network.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/static/paper_network.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar.original" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,7 +101,15 @@
       <option name="project" value="LOCAL" />
       <updated>1717854002169</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="论文查询">
+      <option name="closed" value="true" />
+      <created>1717855988938</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1717855988938</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -111,6 +127,7 @@
     <MESSAGE value="论修了点bug，可以 mvn spring-boot:run&#10;了" />
     <MESSAGE value="可以上传论文了" />
     <MESSAGE value="可以上传和查询分类了" />
-    <option name="LAST_COMMIT_MESSAGE" value="可以上传和查询分类了" />
+    <MESSAGE value="论文查询" />
+    <option name="LAST_COMMIT_MESSAGE" value="论文查询" />
   </component>
 </project>
