@@ -1,10 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>论文工作量计算</title>
 </head>
-<body>
 
+<body>
+<h1>论文工作量</h1>
+<!-- 计算发表论文的工作量分数，支持学院科研工作量考核，为科研人员的绩效考核提供依据。 -->
+<div>
+    <form id="paper-score-form">
+        <label for="paperName">论文名称:</label>
+        <input type="text" id="paperName" name="paperName" required>
+        <label for="authorName">作者姓名:</label>
+        <input type="text" id="authorName" name="authorName" required>
+        <label for="time">发表时间:</label>
+        <input type="text" id="time" name="time" required>
+        <label for="publication">刊物:</label>
+        <input type="text" id="publication" name="publication" required>
+        <label for="category">类别:</label>
+        <input type="text" id="category" name="category" required>
+        <button type="submit">计算</button>
+    </form>
+    <h2>计算结果</h2>
+    <ul id="paper-score-list"></ul>
+</div>
 </body>
+
 </html>

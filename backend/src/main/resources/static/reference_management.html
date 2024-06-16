@@ -2,9 +2,136 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reference Management System</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+<h1>Reference Management System</h1>
+<div id="app">
+    <h2>Select Paper</h2>
+    <select id="paper-select">
+        <option value="" disabled selected>Select a paper</option>
+    </select>
+    <h2>View References for Selected Paper</h2>
+    <table id="reference-table">
+        <thead>
+        <tr>
+            <th>Reference ID</th>
+            <th>Reference Name</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="reference-list">
+        </tbody>
+    </table>
+    <h2>Add Reference to Selected Paper</h2>
+    <form id="reference-form">
+        <label for="referenceId">Reference ID:</label>
+        <input type="number" id="referenceId" name="referenceId" required>
+        <button type="submit">Add Reference</button>
+    </form>
+</div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const paperSelect = document.getElementById('paper-select');
+        const referenceList = document.getElementById('reference-list');
+        const form = document.getElementById('reference-form');
+        let selectedPaperId = null;
+
+        // Fetch and populate the paper dropdown
+        fetch('/api/papers')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(paper => {
+                    const option = document.createElement('option');
+                    option.value = paper.id;
+                    option.textContent = paper.title;
+                    paperSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching papers:', error));
+
+        // Event listener for paper selection
+        paperSelect.addEventListener('change', () => {
+            selectedPaperId = paperSelect.value;
+            fetchReferences(selectedPaperId);
+        });
+
+        // Fetch and display references for selected paper
+        function fetchReferences(paperId) {
+            referenceList.innerHTML = ''; // Clear the current list
+            fetch(`/api/references/${paperId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        data.forEach(reference => {
+                            const listItem = createReferenceListItem(reference);
+                            referenceList.appendChild(listItem);
+                        });
+                    } else {
+                        console.error('Unexpected response format:', data);
+                    }
+                })
+                .catch(error => console.error('Error fetching references:', error));
+        }
+
+        // Create reference list item
+        function createReferenceListItem(reference) {
+            const listItem = document.createElement('tr');
+            listItem.setAttribute('data-id', reference.id);
+            listItem.innerHTML = `
+                <td>${reference.referenceId}</td>
+                <td>${reference.referenceName}</td>
+                <td>
+                    <button class="delete">Delete</button>
+                </td>
+            `;
+            return listItem;
+        }
+
+        // Event listener for form submission
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            formData.append('paperId', selectedPaperId);
+
+            fetch('/api/references/add', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const listItem = createReferenceListItem(data);
+                referenceList.appendChild(listItem);
+                form.reset();
+                alert('Reference added successfully!');
+            })
+            .catch(error => console.error('Error adding reference:', error));
+        });
+
+        // Event listener for delete buttons
+        referenceList.addEventListener('click', (event) => {
+            const listItem = event.target.parentElement.parentElement;
+            const referenceId = listItem.getAttribute('data-id');
+
+            if (event.target.classList.contains('delete')) {
+                fetch(`/api/references/delete/${referenceId}`, {
+                    method: 'DELETE'
+                })
+                .then(() => {
+                    listItem.remove();
+                })
+                .catch(error => console.error('Error deleting reference:', error));
+            }
+        });
+    });
+</script>
 </body>
 </html>
