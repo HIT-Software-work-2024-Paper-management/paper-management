@@ -2,8 +2,10 @@ package com.myproject.controller;
 
 import com.myproject.model.Paper;
 import com.myproject.model.Category;
+import com.myproject.model.Journal;
 import com.myproject.service.PaperService;
 import com.myproject.service.CategoryService;
+import com.myproject.service.JournalService;
 import com.myproject.specification.PaperSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -12,10 +14,10 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.jpa.domain.Specification; // 确保导入 Specification
+import org.springframework.data.jpa.domain.Specification;
+
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,9 +27,6 @@ import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Map;
-import java.util.Set; // 确保导入 Set
-
 
 @RestController
 @RequestMapping("/api/papers")
@@ -40,6 +39,9 @@ public class PaperController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private JournalService journalService;
 
     @PostConstruct
     public void init() {
@@ -56,7 +58,7 @@ public class PaperController {
     public ResponseEntity<Paper> savePaper(@RequestParam("title") String title,
                                            @RequestParam("authors") String authors, // 使用分号分隔的作者列表
                                            @RequestParam("date") Date date,
-                                           @RequestParam("journal") String journal,
+                                           @RequestParam("journalId") Long journalId,
                                            @RequestParam("file") MultipartFile file,
                                            @RequestParam("categoryId") Long categoryId,
                                            @RequestParam("type") String type,
@@ -67,7 +69,7 @@ public class PaperController {
         System.out.println("Title: " + title);
         System.out.println("Authors: " + authors);
         System.out.println("Date: " + date);
-        System.out.println("Journal: " + journal);
+        System.out.println("JournalId: " + journalId);
         System.out.println("CategoryId: " + categoryId);
         System.out.println("Type: " + type);
         System.out.println("ImpactFactor: " + impactFactor);
@@ -78,11 +80,9 @@ public class PaperController {
         paper.setTitle(title);
         paper.setAuthors(authors); // 直接保存字符串形式的作者
         paper.setDate(date);
-        paper.setJournal(journal);
         paper.setType(type);
         paper.setImpactFactor(impactFactor);
         paper.setAuthorRank(authorRank);
-        System.out.println("Arrived here. ");
 
         Optional<Category> categoryOpt = categoryService.getCategoryById(categoryId);
         if (categoryOpt.isPresent()) {
@@ -91,6 +91,12 @@ public class PaperController {
             return ResponseEntity.badRequest().build();
         }
 
+        Optional<Journal> journalOpt = journalService.getJournalById(journalId);
+        if (journalOpt.isPresent()) {
+            paper.setJournal(journalOpt.get());
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
 
         String filename = file.getOriginalFilename();
         if (filename != null) {
@@ -123,8 +129,30 @@ public class PaperController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Paper> updatePaper(@PathVariable Long id, @RequestBody Paper updatedPaper) {
-        Paper paper = paperService.updatePaper(id, updatedPaper);
-        return ResponseEntity.ok(paper);
+        Optional<Paper> existingPaperOpt = paperService.getPaperById(id);
+        if (existingPaperOpt.isPresent()) {
+            Paper existingPaper = existingPaperOpt.get();
+            existingPaper.setTitle(updatedPaper.getTitle());
+            existingPaper.setAuthors(updatedPaper.getAuthors());
+            existingPaper.setDate(updatedPaper.getDate());
+            existingPaper.setCategory(updatedPaper.getCategory());
+            existingPaper.setFileUrl(updatedPaper.getFileUrl());
+            existingPaper.setType(updatedPaper.getType());
+            existingPaper.setImpactFactor(updatedPaper.getImpactFactor());
+            existingPaper.setAuthorRank(updatedPaper.getAuthorRank());
+
+            Optional<Journal> journalOpt = journalService.getJournalById(updatedPaper.getJournal().getId());
+            if (journalOpt.isPresent()) {
+                existingPaper.setJournal(journalOpt.get());
+            } else {
+                return ResponseEntity.badRequest().build();
+            }
+
+            Paper savedPaper = paperService.updatePaper(id, existingPaper);
+            return ResponseEntity.ok(savedPaper);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/search")
@@ -141,7 +169,6 @@ public class PaperController {
         System.out.println("keywords=" + keywords);
         System.out.println("journal=" + journal);
         System.out.println("categoryId=" + categoryId);
-
 
         Specification<Paper> spec = Specification.where(PaperSpecification.hasTitle(title))
                 .and(PaperSpecification.hasAuthors(authors))
@@ -179,7 +206,6 @@ public class PaperController {
         return ResponseEntity.ok().headers(headers).body(new InputStreamResource(in));
     }
 
-
     @GetMapping("/{id}/download")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id) throws IOException {
         Optional<Paper> paperOpt = paperService.getPaperById(id);
@@ -195,5 +221,4 @@ public class PaperController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
 }

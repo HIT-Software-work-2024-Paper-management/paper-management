@@ -1,6 +1,8 @@
 com\myproject\model\Reference.class
 com\myproject\repository\ReferenceRepository.class
 com\myproject\service\PaperService.class
+com\myproject\controller\JournalController.class
+com\myproject\service\JournalService.class
 com\myproject\controller\CategoryController.class
 com\myproject\PaperManagementApplication.class
 com\myproject\controller\PaperController.class
@@ -8,6 +10,8 @@ com\myproject\model\Paper.class
 com\myproject\service\ReferenceService.class
 com\myproject\dto\CategoryDTO.class
 com\myproject\specification\PaperSpecification.class
+com\myproject\model\Journal.class
+com\myproject\repository\JournalRepository.class
 com\myproject\repository\PaperRepository.class
 com\myproject\repository\CategoryRepository.class
 com\myproject\config\WebConfig.class

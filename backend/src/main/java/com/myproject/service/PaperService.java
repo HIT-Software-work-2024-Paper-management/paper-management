@@ -1,6 +1,8 @@
 package com.myproject.service;
 
+import com.myproject.model.Journal;
 import com.myproject.model.Paper;
+import com.myproject.repository.JournalRepository;
 import com.myproject.repository.PaperRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -14,8 +16,10 @@ import java.io.IOException;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.HashSet;
 
 @Service
 public class PaperService {
@@ -23,7 +27,18 @@ public class PaperService {
     @Autowired
     private PaperRepository paperRepository;
 
+    @Autowired
+    private JournalRepository journalRepository;
+
     public Paper savePaper(Paper paper) {
+        Journal journal = journalRepository.findByName(paper.getJournal().getName());
+        if (journal != null) {
+            paper.setJournal(journal);
+        } else {
+            journal = paper.getJournal();
+            journalRepository.save(journal);
+        }
+        paper.setWorkloadScore(calculateWorkloadScore(paper)); // 计算工作量分数
         return paperRepository.save(paper);
     }
 
@@ -40,7 +55,7 @@ public class PaperService {
         if (paperOptional.isPresent()) {
             Paper paper = paperOptional.get();
             // 删除文件
-            String fileUrl = paper.getFileUrl(); // 假设文件路径存储在 filePath 字段中
+            String fileUrl = paper.getFileUrl();
             File file = new File(fileUrl);
             if (file.exists()) {
                 file.delete();
@@ -55,16 +70,28 @@ public class PaperService {
             paper.setTitle(updatedPaper.getTitle());
             paper.setAuthors(updatedPaper.getAuthors());
             paper.setDate(updatedPaper.getDate());
-            paper.setJournal(updatedPaper.getJournal());
+            paper.setJournal(updateJournal(updatedPaper.getJournal()));
             paper.setCategory(updatedPaper.getCategory());
             paper.setFileUrl(updatedPaper.getFileUrl());
             paper.setType(updatedPaper.getType());
             paper.setKeywords(updatedPaper.getKeywords());
+            paper.setWorkloadScore(calculateWorkloadScore(updatedPaper)); // 计算工作量分数
             return paperRepository.save(paper);
         }).orElseGet(() -> {
             updatedPaper.setId(id);
+            updatedPaper.setJournal(updateJournal(updatedPaper.getJournal()));
+            updatedPaper.setWorkloadScore(calculateWorkloadScore(updatedPaper)); // 计算工作量分数
             return paperRepository.save(updatedPaper);
         });
+    }
+
+    private Journal updateJournal(Journal journal) {
+        Journal existingJournal = journalRepository.findByName(journal.getName());
+        if (existingJournal != null) {
+            return existingJournal;
+        } else {
+            return journalRepository.save(journal);
+        }
     }
 
     public List<Paper> searchPapers(Specification<Paper> spec) {
@@ -94,10 +121,10 @@ public class PaperService {
                 Row row = sheet.createRow(rowIdx++);
 
                 row.createCell(0).setCellValue(paper.getTitle());
-                row.createCell(1).setCellValue(paper.getAuthors()); // 修改为直接使用字符串
+                row.createCell(1).setCellValue(paper.getAuthors());
                 row.createCell(2).setCellValue(paper.getKeywords());
                 row.createCell(3).setCellValue(paper.getDate().toString());
-                row.createCell(4).setCellValue(paper.getJournal());
+                row.createCell(4).setCellValue(paper.getJournal().getName());
                 row.createCell(5).setCellValue(paper.getCategory().getName());
                 row.createCell(6).setCellValue(paper.getType());
             }
@@ -123,4 +150,20 @@ public class PaperService {
         return coAuthorMap;
     }
 
+    private double calculateWorkloadScore(Paper paper) {
+        double baseScore = paper.getImpactFactor();
+        double rankMultiplier = getRankMultiplier(paper.getAuthorRank());
+        double journalWeight = paper.getJournal().getWeight();
+        return baseScore * rankMultiplier * journalWeight;
+    }
+
+    private double getRankMultiplier(int authorRank) {
+        if (authorRank == 1) {
+            return 1.5;
+        } else if (authorRank == 2) {
+            return 1.2;
+        } else {
+            return 1.0;
+        }
+    }
 }

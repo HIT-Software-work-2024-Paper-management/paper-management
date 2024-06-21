@@ -12,20 +12,22 @@ public class Paper {
     private Long id;
 
     private String title;
-    private String authors; // 将作者改为字符串
+    private String authors;
     private String keywords;
     private Date date;
-    private String journal;
     private String fileUrl;
-//    private String filePath;
 
-    private double workloadScore; // 工作分数
-    private double impactFactor; // 期刊影响因子
-    private int authorRank; // 作者排名
+    private double workloadScore;
+    private double impactFactor;
+    private int authorRank;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "journal_id")
+    private Journal journal;
 
     private String type; // 'paper' or 'reference'
 
@@ -71,14 +73,6 @@ public class Paper {
         this.date = date;
     }
 
-    public String getJournal() {
-        return journal;
-    }
-
-    public void setJournal(String journal) {
-        this.journal = journal;
-    }
-
     public String getFileUrl() {
         return fileUrl;
     }
@@ -119,6 +113,14 @@ public class Paper {
         this.category = category;
     }
 
+    public Journal getJournal() {
+        return journal;
+    }
+
+    public void setJournal(Journal journal) {
+        this.journal = journal;
+    }
+
     public String getType() {
         return type;
     }
@@ -126,12 +128,4 @@ public class Paper {
     public void setType(String type) {
         this.type = type;
     }
-
-//    public String getFilePath() {
-//        return filePath;
-//    }
-//
-//    public void setFilePath(String filePath) {
-//        this.filePath = filePath;
-//    }
 }

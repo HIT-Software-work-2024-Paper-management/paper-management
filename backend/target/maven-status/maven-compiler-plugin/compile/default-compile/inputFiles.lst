@@ -1,3 +1,5 @@
+E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\repository\JournalRepository.java
+E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\model\Journal.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\repository\CategoryRepository.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\specification\PaperSpecification.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\controller\CategoryController.java
@@ -5,7 +7,9 @@ E:\learning_project\software_engineering\paper-management\backend\src\main\java\
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\PaperManagementApplication.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\model\Category.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\repository\ReferenceRepository.java
+E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\controller\JournalController.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\config\WebConfig.java
+E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\service\JournalService.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\model\Reference.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\dto\CategoryDTO.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\dto\ReferenceResponse.java
