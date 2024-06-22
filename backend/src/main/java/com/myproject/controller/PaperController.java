@@ -1,8 +1,10 @@
 package com.myproject.controller;
 
 import com.myproject.model.Paper;
+import com.myproject.model.Author;
 import com.myproject.model.Category;
 import com.myproject.model.Journal;
+import com.myproject.model.PaperAuthor;
 import com.myproject.service.PaperService;
 import com.myproject.service.CategoryService;
 import com.myproject.service.JournalService;
@@ -26,7 +28,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/papers")
@@ -55,34 +59,56 @@ public class PaperController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<Paper> savePaper(@RequestParam("title") String title,
-                                           @RequestParam("authors") String authors, // 使用分号分隔的作者列表
-                                           @RequestParam("date") Date date,
-                                           @RequestParam("journalId") Long journalId,
-                                           @RequestParam("file") MultipartFile file,
-                                           @RequestParam("categoryId") Long categoryId,
-                                           @RequestParam("type") String type,
-                                           @RequestParam("impactFactor") double impactFactor,
-                                           @RequestParam("authorRank") int authorRank) throws IOException {
-        // 打印请求参数
+    public ResponseEntity<Paper> savePaper(
+            @RequestParam("title") String title,
+            @RequestParam Map<String, String> authorsMap,
+            @RequestParam("date") Date date,
+            @RequestParam("journal") Long journalId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("categoryId") Long categoryId,
+            @RequestParam("type") String type,
+            @RequestParam("impactFactor") double impactFactor) throws IOException {
+
 
         System.out.println("Title: " + title);
-        System.out.println("Authors: " + authors);
         System.out.println("Date: " + date);
         System.out.println("JournalId: " + journalId);
         System.out.println("CategoryId: " + categoryId);
         System.out.println("Type: " + type);
         System.out.println("ImpactFactor: " + impactFactor);
-        System.out.println("AuthorRank: " + authorRank);
         System.out.println("File: " + file.getOriginalFilename());
 
         Paper paper = new Paper();
         paper.setTitle(title);
-        paper.setAuthors(authors); // 直接保存字符串形式的作者
+
+        // 初始化paperAuthors列表
+        paper.setPaperAuthors(new ArrayList<>());
+
+
+        // 处理作者列表
+        List<PaperAuthor> paperAuthors = new ArrayList<>();
+        int i = 0;
+        while (authorsMap.containsKey("authors[" + i + "].id")) {
+            Long authorId = Long.parseLong(authorsMap.get("authors[" + i + "].id"));
+            Optional<Author> authorOpt = paperService.getAuthorById(authorId);
+
+            if (!authorOpt.isPresent()) {
+                return ResponseEntity.badRequest().body(null); // 如果作者不存在，返回错误
+            }
+
+            Author author = authorOpt.get();
+            PaperAuthor paperAuthor = new PaperAuthor();
+            paperAuthor.setAuthor(author);
+            paperAuthor.setRank(Integer.parseInt(authorsMap.get("authors[" + i + "].rank")));
+            paperAuthor.setPaper(paper);
+            paperAuthors.add(paperAuthor);
+            i++;
+        }
+
+        // 设置其他字段
         paper.setDate(date);
-        paper.setType(type);
         paper.setImpactFactor(impactFactor);
-        paper.setAuthorRank(authorRank);
+        paper.setType(type);
 
         Optional<Category> categoryOpt = categoryService.getCategoryById(categoryId);
         if (categoryOpt.isPresent()) {
@@ -98,17 +124,25 @@ public class PaperController {
             return ResponseEntity.badRequest().build();
         }
 
+
         String filename = file.getOriginalFilename();
         if (filename != null) {
             Path destinationFile = rootLocation.resolve(Paths.get(filename)).normalize().toAbsolutePath();
+            if (!destinationFile.startsWith(rootLocation.toAbsolutePath())) {
+                // 防止文件路径遍历攻击
+                return ResponseEntity.badRequest().build();
+            }
             Files.copy(file.getInputStream(), destinationFile);
-
             paper.setFileUrl(destinationFile.toString());
         }
 
-        Paper savedPaper = paperService.savePaper(paper);
+//        paper.setPaperAuthors(paperAuthors); // 设置paperAuthors到paper
+        Paper savedPaper = paperService.savePaper(paper, paperAuthors);
         return ResponseEntity.ok(savedPaper);
     }
+
+
+
 
     @GetMapping
     public List<Paper> getAllPapers() {
@@ -139,7 +173,6 @@ public class PaperController {
             existingPaper.setFileUrl(updatedPaper.getFileUrl());
             existingPaper.setType(updatedPaper.getType());
             existingPaper.setImpactFactor(updatedPaper.getImpactFactor());
-            existingPaper.setAuthorRank(updatedPaper.getAuthorRank());
 
             Optional<Journal> journalOpt = journalService.getJournalById(updatedPaper.getJournal().getId());
             if (journalOpt.isPresent()) {

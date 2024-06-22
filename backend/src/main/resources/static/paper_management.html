@@ -13,8 +13,10 @@
         <h2>Upload Paper</h2>
         <label for="title">Title:</label>
         <input type="text" id="title" name="title" required>
-        <label for="authors">Authors (separated by semicolons):</label>
-        <input type="text" id="authors" name="authors" required>
+        <label for="authors">Authors:</label>
+        <div id="authors"></div>
+        <button type="button" onclick="addAuthor()">Add Author</button>
+        <!-- 其他字段 -->
         <label for="date">Date:</label>
         <input type="date" id="date" name="date" required>
         <label for="journal">Journal:</label>
@@ -27,8 +29,6 @@
         <select id="type" name="type" required></select>
         <label for="impactFactor">Impact Factor:</label>
         <input type="number" step="0.01" id="impactFactor" name="impactFactor" required>
-        <label for="authorRank">Author Rank:</label>
-        <input type="number" id="authorRank" name="authorRank" required>
         <button type="submit">Upload</button>
     </form>
     <h2>View Papers</h2>
@@ -37,179 +37,281 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-     const form = document.getElementById('paper-form');
-     const paperList = document.getElementById('paper-list');
-     const viewPapersButton = document.getElementById('view-papers-button');
-     const categorySelect = document.getElementById('type');
-     const journalSelect = document.getElementById('journal');
-     const categoryIdInput = document.getElementById('categoryId');
+    let authorsData = []; // 保存从后端获取的作者数据
 
-     // Fetch categories and populate the dropdown
-     fetch('/api/categories/searchid')
-         .then(response => response.json())
-         .then(data => {
-             data.forEach(category => {
-                 const option = document.createElement('option');
-                 option.value = category.id;
-                 option.textContent = category.name;
-                 categorySelect.appendChild(option);
-             });
-         })
-         .catch(error => console.error('Error fetching categories:', error));
+  // 动态加载作者列表
+  function loadAuthors() {
+      fetch('/api/authors')
+          .then(response => response.json())
+          .then(data => {
+              authorsData = data;
+          })
+          .catch(error => console.error('Error fetching authors:', error));
+  }
 
-     // Fetch journals and populate the dropdown
-     fetch('/api/journals')
-         .then(response => response.json())
-         .then(data => {
-             data.forEach(journal => {
-                 const option = document.createElement('option');
-                 option.value = journal.id;
-                 option.textContent = journal.name;
-                 journalSelect.appendChild(option);
-             });
-         })
-         .catch(error => console.error('Error fetching journals:', error));
+  // 动态添加作者输入字段
+  function addAuthor() {
+      const authorDiv = document.createElement('div');
+      authorDiv.classList.add('author');
+      const authorSelect = document.createElement('select');
+      authorSelect.name = 'authorId';
+      authorSelect.required = true;
 
-     // Update categoryId when category is selected
-     categorySelect.addEventListener('change', () => {
-         const selectedCategory = categorySelect.options[categorySelect.selectedIndex];
-         categoryIdInput.value = selectedCategory.value;
-     });
+      authorsData.forEach(author => {
+          const option = document.createElement('option');
+          option.value = author.id;
+          option.textContent = author.name;
+          authorSelect.appendChild(option);
+      });
 
-     // Fetch and display all papers when "View Uploaded Papers" button is clicked
-     viewPapersButton.addEventListener('click', () => {
-         paperList.innerHTML = ''; // Clear the current list
-         fetchPapers();
-     });
+      authorDiv.innerHTML = `
+          <select name="authorRank" required>
+              <option value="" disabled selected>Select Rank</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+          </select>
+          <button type="button" onclick="removeAuthor(this)">Remove</button>
+      `;
+      authorDiv.insertBefore(authorSelect, authorDiv.firstChild);
+      document.getElementById('authors').appendChild(authorDiv);
+  }
 
-     function fetchPapers() {
-         fetch('/api/papers')
-             .then(response => response.json())
-             .then(data => {
-                 data.forEach(paper => {
-                     const listItem = createPaperListItem(paper);
-                     paperList.appendChild(listItem);
-                 });
-             })
-             .catch(error => console.error('Error fetching papers:', error));
-     }
+  // 移除作者输入字段
+  function removeAuthor(button) {
+      button.parentElement.remove();
+  }
 
-     form.addEventListener('submit', (event) => {
-         event.preventDefault();
-         const formData = new FormData(form);
+  document.addEventListener('DOMContentLoaded', () => {
+      loadAuthors(); // 加载作者列表
 
-         fetch('/api/papers/upload', {
-             method: 'POST',
-             body: formData
-         })
-         .then(response => {
-             if (!response.ok) {
-                 throw new Error('Network response was not ok');
-             }
-             return response.json();
-         })
-         .then(data => {
-             const listItem = createPaperListItem(data);
-             paperList.appendChild(listItem);
-             form.reset();
-             alert('Paper uploaded successfully!');
-         })
-         .catch(error => console.error('Error uploading paper:', error));
-     });
+      const form = document.getElementById('paper-form');
+      const paperList = document.getElementById('paper-list');
+      const viewPapersButton = document.getElementById('view-papers-button');
+      const categorySelect = document.getElementById('type');
+      const journalSelect = document.getElementById('journal');
+      const categoryIdInput = document.getElementById('categoryId');
 
-     paperList.addEventListener('click', (event) => {
-         const listItem = event.target.parentElement;
-         const paperId = listItem.getAttribute('data-id');
+      // Fetch categories and populate the dropdown
+      fetch('/api/categories/searchid')
+          .then(response => response.json())
+          .then(data => {
+              data.forEach(category => {
+                  const option = document.createElement('option');
+                  option.value = category.id;
+                  option.textContent = category.name;
+                  categorySelect.appendChild(option);
+              });
+          })
+          .catch(error => console.error('Error fetching categories:', error));
 
-         if (event.target.classList.contains('edit')) {
-             const spans = listItem.getElementsByTagName('span');
-             document.getElementById('title').value = spans[0].textContent.replace('Title: ', '');
-             document.getElementById('authors').value = spans[1].textContent.replace('Authors: ', '');
-             document.getElementById('date').value = spans[2].textContent.replace('Date: ', '');
-             document.getElementById('journal').value = spans[3].getAttribute('data-id'); // 修改为获取 journal ID
-             document.getElementById('categoryId').value = spans[4].textContent.replace('Category: ', '');
-             document.getElementById('type').value = spans[5].textContent.replace('Type: ', '');
-             document.getElementById('impactFactor').value = spans[6].textContent.replace('Impact Factor: ', '');
-             document.getElementById('authorRank').value = spans[7].textContent.replace('Author Rank: ', '');
+      // Fetch journals and populate the dropdown
+      fetch('/api/journals')
+          .then(response => response.json())
+          .then(data => {
+              data.forEach(journal => {
+                  const option = document.createElement('option');
+                  option.value = journal.id;
+                  option.textContent = journal.name;
+                  journalSelect.appendChild(option);
+              });
+          })
+          .catch(error => console.error('Error fetching journals:', error));
 
-             form.addEventListener('submit', function updatePaper(event) {
-                 event.preventDefault();
+      // Update categoryId when category is selected
+      categorySelect.addEventListener('change', () => {
+          const selectedCategory = categorySelect.options[categorySelect.selectedIndex];
+          categoryIdInput.value = selectedCategory.value;
+      });
 
-                 const updatedFormData = new FormData(form);
-                 const updatedPaper = {
-                     title: updatedFormData.get('title'),
-                     authors: updatedFormData.get('authors'),
-                     date: updatedFormData.get('date'),
-                     journal: { id: updatedFormData.get('journal') }, // 修改为包含 journal ID
-                     fileUrl: listItem.querySelector('.download').getAttribute('data-file-url'),
-                     categoryId: updatedFormData.get('categoryId'),
-                     type: updatedFormData.get('type'),
-                     impactFactor: updatedFormData.get('impactFactor'),
-                     authorRank: updatedFormData.get('authorRank')
-                 };
+      // Fetch and display all papers when "View Uploaded Papers" button is clicked
+      viewPapersButton.addEventListener('click', () => {
+          paperList.innerHTML = ''; // Clear the current list
+          fetchPapers();
+      });
 
-                 fetch(`/api/papers/${paperId}`, {
-                     method: 'PUT',
-                     body: JSON.stringify(updatedPaper),
-                     headers: {
-                         'Content-Type': 'application/json'
-                     }
-                 })
-                 .then(response => response.json())
-                 .then(data => {
-                     spans[0].textContent = `Title: ${data.title}`;
-                     spans[1].textContent = `Authors: ${data.authors}`;
-                     spans[2].textContent = `Date: ${data.date}`;
-                     spans[3].textContent = `Journal: ${data.journal.name}`; // 修改为显示 journal name
-                     spans[3].setAttribute('data-id', data.journal.id); // 保存 journal ID
-                     spans[4].textContent = `Category: ${data.category.name}`;
-                     spans[5].textContent = `Type: ${data.type}`;
-                     spans[6].textContent = `Impact Factor: ${data.impactFactor}`;
-                     spans[7].textContent = `Author Rank: ${data.authorRank}`;
+      function fetchPapers() {
+          fetch('/api/papers')
+              .then(response => response.json())
+              .then(data => {
+                  data.forEach(paper => {
+                      const listItem = createPaperListItem(paper);
+                      paperList.appendChild(listItem);
+                  });
+              })
+              .catch(error => console.error('Error fetching papers:', error));
+      }
 
-                     form.removeEventListener('submit', updatePaper);
-                     form.reset();
-                 })
-                 .catch(error => console.error('Error updating paper:', error));
-             }, { once: true });
-         }
+      form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const formData = new FormData(form);
 
-         if (event.target.classList.contains('delete')) {
-             fetch(`/api/papers/${paperId}`, {
-                 method: 'DELETE'
-             })
-             .then(() => {
-                 listItem.remove();
-             })
-             .catch(error => console.error('Error deleting paper:', error));
-         }
+          // 将作者信息以列表形式添加到 FormData
+          const authors = document.querySelectorAll('.author');
+          authors.forEach((author, index) => {
+              formData.append(`authors[${index}].id`, author.querySelector('select[name="authorId"]').value);
+              formData.append(`authors[${index}].rank`, author.querySelector('select[name="authorRank"]').value);
+          });
 
-         if (event.target.classList.contains('download')) {
-             const fileUrl = `/api/papers/${paperId}/download`; // 构建下载文件的 URL
-             window.open(fileUrl, '_blank'); // 在新窗口中打开文件 URL
-         }
-     });
+          fetch('/api/papers/upload', {
+              method: 'POST',
+              body: formData
+          })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              return response.json();
+          })
+          .then(data => {
+              console.log('Upload response data:', data); // 添加日志
+              const listItem = createPaperListItem(data);
+              paperList.appendChild(listItem);
+              form.reset();
+              alert('Paper uploaded successfully!');
+          })
+          .catch(error => console.error('Error uploading paper:', error));
+      });
 
-     function createPaperListItem(paper) {
-         const listItem = document.createElement('li');
-         listItem.setAttribute('data-id', paper.id);
-         listItem.innerHTML = `
-             <span>Title: ${paper.title}</span>,
-             <span>Authors: ${paper.authors}</span>,
-             <span>Date: ${paper.date}</span>,
-             <span data-id="${paper.journal.id}">Journal: ${paper.journal.name}</span>, <!-- 修改为保存 journal ID 和 name -->
-             <span>Category: ${paper.category.name}</span>,
-             <span>Type: ${paper.type}</span>,
-             <span>Impact Factor: ${paper.impactFactor}</span>,
-             <span>Author Rank: ${paper.authorRank}</span>,
-             <button class="edit">Edit</button>
-             <button class="delete">Delete</button>
-             <button class="download" data-file-url="${paper.fileUrl}">Download</button>
-         `;
-         return listItem;
-     }
- });
+      paperList.addEventListener('click', (event) => {
+          const listItem = event.target.parentElement;
+          const paperId = listItem.getAttribute('data-id');
+
+          if (event.target.classList.contains('edit')) {
+              const spans = listItem.getElementsByTagName('span');
+              document.getElementById('title').value = spans[0].textContent.replace('Title: ', '');
+              const authors = spans[1].textContent.replace('Authors: ', '').split(';');
+              const authorsContainer = document.getElementById('authors');
+              authorsContainer.innerHTML = '';
+              authors.forEach((author, index) => {
+                  const [name, rank] = author.split(':');
+                  const authorDiv = document.createElement('div');
+                  authorDiv.classList.add('author');
+                  const authorSelect = document.createElement('select');
+                  authorSelect.name = 'authorId';
+                  authorSelect.required = true;
+                  authorsData.forEach(auth => {
+                      const option = document.createElement('option');
+                      option.value = auth.id;
+                      option.textContent = auth.name;
+                      if (auth.name === name) {
+                          option.selected = true;
+                      }
+                      authorSelect.appendChild(option);
+                  });
+                  authorDiv.innerHTML = `
+                      <select name="authorRank" required>
+                          <option value="1" ${rank == 1 ? 'selected' : ''}>1</option>
+                          <option value="2" ${rank == 2 ? 'selected' : ''}>2</option>
+                          <option value="3" ${rank == 3 ? 'selected' : ''}>3</option>
+                      </select>
+                      <button type="button" onclick="removeAuthor(this)">Remove</button>
+                  `;
+                  authorDiv.insertBefore(authorSelect, authorDiv.firstChild);
+                  authorsContainer.appendChild(authorDiv);
+              });
+
+              form.addEventListener('submit', function updatePaper(event) {
+                  event.preventDefault();
+
+                  const updatedFormData = new FormData(form);
+                  const updatedPaper = {
+                      title: updatedFormData.get('title'),
+                      authors: [],
+                      date: updatedFormData.get('date'),
+                      journal: { id: updatedFormData.get('journal') }, // 修改为包含 journal ID
+                      fileUrl: listItem.querySelector('.download').getAttribute('data-file-url'),
+                      categoryId: updatedFormData.get('categoryId'),
+                      type: updatedFormData.get('type'),
+                      impactFactor: updatedFormData.get('impactFactor')
+                  };
+
+                  authors.forEach((author, index) => {
+                      updatedPaper.authors.push({
+                          id: author.querySelector('select[name="authorId"]').value,
+                          rank: author.querySelector('select[name="authorRank"]').value
+                      });
+                  });
+
+                  fetch(`/api/papers/${paperId}`, {
+                      method: 'PUT',
+                      body: JSON.stringify(updatedPaper),
+                      headers: {
+                          'Content-Type': 'application/json'
+                      }
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                      spans[0].textContent = `Title: ${data.title}`;
+                      spans[1].textContent = `Authors: ${data.authors.map(author => `${author.name}:${author.rank}`).join('; ')}`;
+                      spans[2].textContent = `Date: ${data.date}`;
+                      spans[3].textContent = `Journal: ${data.journal.name}`; // 修改为显示 journal name
+                      spans[3].setAttribute('data-id', data.journal.id); // 保存 journal ID
+                      spans[4].textContent = `Category: ${data.category.name}`;
+                      spans[5].textContent = `Type: ${data.type}`;
+                      spans[6].textContent = `Impact Factor: ${data.impactFactor}`;
+
+                      form.removeEventListener('submit', updatePaper);
+                      form.reset();
+                  })
+                  .catch(error => console.error('Error updating paper:', error));
+              }, { once: true });
+          }
+
+          if (event.target.classList.contains('delete')) {
+              fetch(`/api/papers/${paperId}`, {
+                  method: 'DELETE'
+              })
+              .then(() => {
+                  listItem.remove();
+              })
+              .catch(error => console.error('Error deleting paper:', error));
+          }
+
+          if (event.target.classList.contains('download')) {
+              const fileUrl = `/api/papers/${paperId}/download`; // 构建下载文件的 URL
+              window.open(fileUrl, '_blank'); // 在新窗口中打开文件 URL
+          }
+      });
+
+      function createPaperListItem(paper) {
+          const listItem = document.createElement('li');
+          listItem.setAttribute('data-id', paper.id);
+
+          // 确保 paper.authors 是一个数组
+          const authors = paper.authors || [];
+          if (!Array.isArray(authors)) {
+              console.error('Invalid authors data:', authors);
+              return listItem;
+          }
+
+          // 确保其他属性存在
+          const title = paper.title || 'Unknown Title';
+          const date = paper.date || 'Unknown Date';
+          const journal = paper.journal || {};
+          const journalId = journal.id || 'Unknown Journal ID';
+          const journalName = journal.name || 'Unknown Journal';
+          const category = paper.category || {};
+          const categoryName = category.name || 'Unknown Category';
+          const type = paper.type || 'Unknown Type';
+          const impactFactor = paper.impactFactor || 'Unknown Impact Factor';
+          const fileUrl = paper.fileUrl || '#';
+
+          listItem.innerHTML = `
+              <span>Title: ${title}</span>,
+              <span>Authors: ${authors.map(author => `${author.name}:${author.rank}`).join('; ')}</span>,
+              <span>Date: ${date}</span>,
+              <span data-id="${journalId}">Journal: ${journalName}</span>,
+              <span>Category: ${categoryName}</span>,
+              <span>Type: ${type}</span>,
+              <span>Impact Factor: ${impactFactor}</span>,
+              <button class="edit">Edit</button>
+              <button class="delete">Delete</button>
+              <button class="download" data-file-url="${fileUrl}">Download</button>
+          `;
+          return listItem;
+      }
+  });
 
 </script>
 

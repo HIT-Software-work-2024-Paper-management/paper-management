@@ -1,8 +1,12 @@
 package com.myproject.service;
 
+import com.myproject.model.Author;
 import com.myproject.model.Journal;
 import com.myproject.model.Paper;
+import com.myproject.model.PaperAuthor;
+import com.myproject.repository.AuthorRepository;
 import com.myproject.repository.JournalRepository;
+import com.myproject.repository.PaperAuthorRepository;
 import com.myproject.repository.PaperRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -16,9 +20,7 @@ import java.io.IOException;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
 import java.util.HashSet;
 
 @Service
@@ -30,7 +32,13 @@ public class PaperService {
     @Autowired
     private JournalRepository journalRepository;
 
-    public Paper savePaper(Paper paper) {
+    @Autowired
+    private AuthorRepository authorRepository;
+
+    @Autowired
+    private PaperAuthorRepository paperAuthorRepository;
+
+    public Paper savePaper(Paper paper, List<PaperAuthor> paperAuthors) {
         Journal journal = journalRepository.findByName(paper.getJournal().getName());
         if (journal != null) {
             paper.setJournal(journal);
@@ -38,8 +46,16 @@ public class PaperService {
             journal = paper.getJournal();
             journalRepository.save(journal);
         }
-        paper.setWorkloadScore(calculateWorkloadScore(paper)); // 计算工作量分数
-        return paperRepository.save(paper);
+
+        Paper savedPaper = paperRepository.save(paper);
+
+        for (PaperAuthor paperAuthor : paperAuthors) {
+            paperAuthor.setPaper(savedPaper);
+            paperAuthorRepository.save(paperAuthor);
+        }
+
+        paper.setWorkloadScore(calculateWorkloadScore(savedPaper)); // 计算工作量分数
+        return savedPaper;
     }
 
     public List<Paper> getAllPapers() {
@@ -74,7 +90,6 @@ public class PaperService {
             paper.setCategory(updatedPaper.getCategory());
             paper.setFileUrl(updatedPaper.getFileUrl());
             paper.setType(updatedPaper.getType());
-            paper.setKeywords(updatedPaper.getKeywords());
             paper.setWorkloadScore(calculateWorkloadScore(updatedPaper)); // 计算工作量分数
             return paperRepository.save(paper);
         }).orElseGet(() -> {
@@ -121,12 +136,13 @@ public class PaperService {
                 Row row = sheet.createRow(rowIdx++);
 
                 row.createCell(0).setCellValue(paper.getTitle());
-                row.createCell(1).setCellValue(paper.getAuthors());
-                row.createCell(2).setCellValue(paper.getKeywords());
-                row.createCell(3).setCellValue(paper.getDate().toString());
-                row.createCell(4).setCellValue(paper.getJournal().getName());
-                row.createCell(5).setCellValue(paper.getCategory().getName());
-                row.createCell(6).setCellValue(paper.getType());
+                row.createCell(1).setCellValue(paper.getAuthors().stream()
+                        .map(Author::getName)
+                        .reduce((a, b) -> a + "; " + b).orElse(""));
+                row.createCell(2).setCellValue(paper.getDate().toString());
+                row.createCell(3).setCellValue(paper.getJournal().getName());
+                row.createCell(4).setCellValue(paper.getCategory().getName());
+                row.createCell(5).setCellValue(paper.getType());
             }
 
             workbook.write(out);
@@ -134,27 +150,46 @@ public class PaperService {
         }
     }
 
-    public Map<String, Set<String>> getCoAuthors(String authorName) {
+    public Set<String> getCoAuthors(String authorName) {
         List<Paper> papers = paperRepository.findByAuthorsContaining(authorName);
-        Map<String, Set<String>> coAuthorMap = new HashMap<>();
+        Set<String> coAuthors = new HashSet<>();
 
         for (Paper paper : papers) {
-            String[] authorsArray = paper.getAuthors().split(";");
-            for (String author : authorsArray) {
-                if (!author.trim().equals(authorName)) {
-                    coAuthorMap.computeIfAbsent(authorName, k -> new HashSet<>()).add(author.trim());
+            for (Author author : paper.getAuthors()) {
+                if (!author.getName().equals(authorName)) {
+                    coAuthors.add(author.getName());
                 }
             }
         }
 
-        return coAuthorMap;
+        return coAuthors;
     }
+
+    public Author saveAuthor(Author author) {
+        Optional<Author> existingAuthor = authorRepository.findById(author.getId());
+        if (existingAuthor.isPresent()) {
+            return existingAuthor.get();
+        } else {
+            return authorRepository.save(author);
+        }
+    }
+
+    public Optional<Author> getAuthorById(Long id) {
+        return authorRepository.findById(id);
+    }
+
 
     private double calculateWorkloadScore(Paper paper) {
         double baseScore = paper.getImpactFactor();
-        double rankMultiplier = getRankMultiplier(paper.getAuthorRank());
+        double totalScore = 0.0;
+
+        for (PaperAuthor paperAuthor : paper.getPaperAuthors()) {
+            double rankMultiplier = getRankMultiplier(paperAuthor.getRank());
+            totalScore += baseScore * rankMultiplier;
+        }
+
         double journalWeight = paper.getJournal().getWeight();
-        return baseScore * rankMultiplier * journalWeight;
+        return totalScore * journalWeight;
     }
 
     private double getRankMultiplier(int authorRank) {

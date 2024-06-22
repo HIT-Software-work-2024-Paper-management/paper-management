@@ -1,4 +1,5 @@
 com\myproject\model\Reference.class
+com\myproject\repository\PaperAuthorRepository.class
 com\myproject\repository\ReferenceRepository.class
 com\myproject\service\PaperService.class
 com\myproject\controller\JournalController.class
@@ -6,6 +7,9 @@ com\myproject\service\JournalService.class
 com\myproject\controller\CategoryController.class
 com\myproject\PaperManagementApplication.class
 com\myproject\controller\PaperController.class
+com\myproject\controller\AuthorController.class
+com\myproject\repository\AuthorRepository.class
+com\myproject\service\AuthorService.class
 com\myproject\model\Paper.class
 com\myproject\service\ReferenceService.class
 com\myproject\dto\CategoryDTO.class
@@ -16,6 +20,8 @@ com\myproject\repository\PaperRepository.class
 com\myproject\repository\CategoryRepository.class
 com\myproject\config\WebConfig.class
 com\myproject\controller\ReferenceController.class
+com\myproject\model\PaperAuthor.class
 com\myproject\dto\ReferenceResponse.class
+com\myproject\model\Author.class
 com\myproject\model\Category.class
 com\myproject\service\CategoryService.class
