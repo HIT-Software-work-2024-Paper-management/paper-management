@@ -12,6 +12,7 @@ E:\learning_project\software_engineering\paper-management\backend\src\main\java\
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\service\PaperService.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\service\ReferenceService.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\specification\PaperSpecification.java
+E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\dto\AuthorResponse.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\model\Author.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\model\Category.java
 E:\learning_project\software_engineering\paper-management\backend\src\main\java\com\myproject\repository\ReferenceRepository.java

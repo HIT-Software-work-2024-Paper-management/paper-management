@@ -1,6 +1,9 @@
 package com.myproject.model;
 
 import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 @Entity
 @Table(name = "paper_author")
@@ -12,10 +15,12 @@ public class PaperAuthor {
 
     @ManyToOne
     @JoinColumn(name = "paper_id", nullable = false)
+    @JsonBackReference
     private Paper paper;
 
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
+    @JsonManagedReference
     private Author author;
 
     @Column(name = "ranking", nullable = false)

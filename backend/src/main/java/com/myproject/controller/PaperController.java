@@ -8,6 +8,7 @@ import com.myproject.model.PaperAuthor;
 import com.myproject.service.PaperService;
 import com.myproject.service.CategoryService;
 import com.myproject.service.JournalService;
+import com.myproject.dto.AuthorResponse;
 import com.myproject.specification.PaperSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -31,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/papers")
@@ -136,7 +139,7 @@ public class PaperController {
             paper.setFileUrl(destinationFile.toString());
         }
 
-//        paper.setPaperAuthors(paperAuthors); // 设置paperAuthors到paper
+        paper.setPaperAuthors(paperAuthors); // 设置paperAuthors到paper
         Paper savedPaper = paperService.savePaper(paper, paperAuthors);
         return ResponseEntity.ok(savedPaper);
     }
@@ -157,8 +160,24 @@ public class PaperController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePaper(@PathVariable Long id) {
-        paperService.deletePaper(id);
-        return ResponseEntity.noContent().build();
+        try {
+            System.out.println("come to here1 ");
+            Optional<Paper> paperOpt = paperService.getPaperById(id);
+            System.out.println("come to here2 ");
+            if (paperOpt.isPresent()) {
+                Paper paper = paperOpt.get();
+                System.out.println("Deleting paper with ID: " + paper.getId());
+                paperService.deletePaper(id);
+                System.out.println("Successfully deleted paper with ID: " + paper.getId());
+                return ResponseEntity.noContent().build();
+            } else {
+                System.out.println("Paper with ID " + id + " not found");
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/{id}")
@@ -254,4 +273,38 @@ public class PaperController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    //以下用于论文呢关系网络
+    @GetMapping("/author/{authorName}")
+    public ResponseEntity<List<Paper>> getPapersByAuthorName(@PathVariable String authorName) {
+        List<Paper> papers = paperService.findPapersByAuthorName(authorName);
+        return ResponseEntity.ok(papers);
+    }
+
+    @GetMapping("/{paperId}/authors")
+    public ResponseEntity<List<AuthorResponse>> getAuthorsByPaperId(@PathVariable Long paperId) {
+        List<PaperAuthor> paperAuthors = paperService.findAuthorsByPaperId(paperId);
+        List<AuthorResponse> response = paperAuthors.stream()
+                .map(pa -> new AuthorResponse(pa.getAuthor().getName(), pa.getRank()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
+        //以下用于计算工作量分数
+        @GetMapping("/workload-score")
+        public ResponseEntity<Double> getWorkloadScore(@RequestParam String paperTitle, @RequestParam String authorName) {
+            Paper paper = paperService.findPaperByTitle(paperTitle);
+            if (paper == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
+
+            double score;
+            try {
+                score = paperService.calculateWorkloadScore(paper, authorName);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body(null);
+            }
+
+            return ResponseEntity.ok(score);
+        }
 }

@@ -1,55 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>论文关系网络</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .paper-title {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .author-info {
+            color: #555;
+        }
+    </style>
 </head>
-
 <body>
 <h1>论文关系网络</h1>
-<!-- 作者和哪些人共同发表过论文 -->
 <div>
-    <form id="paper-network-form">
-        <h2>查询作者关系</h2>
-        <label for="authorName">作者姓名:</label>
-        <input type="text" id="authorName" name="authorName" required>
-        <button type="submit">查询</button>
-    </form>
-    <h2>查询结果</h2>
-    <ul id="author-network-list"></ul>
+    <input type="text" id="authorName" placeholder="输入作者姓名">
+    <button id="fetchButton">查询</button>
+    <ul id="authorNetworkList"></ul>
 </div>
-</body>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('paper-network-form');
-        const authorNetworkList = document.getElementById('author-network-list');
+    document.getElementById('fetchButton').addEventListener('click', () => {
+        const authorName = document.getElementById('authorName').value.trim();
+        const authorNetworkList = document.getElementById('authorNetworkList');
+        authorNetworkList.innerHTML = ''; // 清空现有的列表
 
-        form.addEventListener('submit', event => {
-            event.preventDefault();
-            const formData = new FormData(form);
-            const authorName = formData.get('authorName').trim();
-            authorNetworkList.innerHTML = ''; // Clear the current list
+        fetch(`/api/papers/author/${authorName}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(papers => {
+                const authorPromises = papers.map(paper => fetch(`/api/papers/${paper.id}/authors`).then(res => res.json().then(authors => ({ paper, authors }))));
 
-            fetch(`/api/papers`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
+                return Promise.all(authorPromises).then(paperAuthorsList => {
                     const authorCollaborations = [];
 
-                    data.forEach(paper => {
-                        const authors = paper.authors.split(';').map(author => author.trim());
-                        if (authors.includes(authorName)) {
-                            const coAuthors = authors.filter(coAuthor => coAuthor !== authorName).join('; ');
-                            if (coAuthors) {
-                                authorCollaborations.push(`${coAuthors}; ${paper.title}`);
+                    paperAuthorsList.forEach(({ paper, authors }) => {
+                        authors.forEach(author => {
+                            if (author.name !== authorName) {
+                                authorCollaborations.push({
+                                    title: paper.title,
+                                    authorName: author.name,
+                                    rank: author.rank
+                                });
                             }
-                        }
+                        });
                     });
 
                     if (authorCollaborations.length > 0) {
@@ -62,16 +62,16 @@
                         listItem.textContent = 'No co-authors found for this author.';
                         authorNetworkList.appendChild(listItem);
                     }
-                })
-                .catch(error => console.error('Error fetching author network:', error));
-        });
-
-        function createAuthorListItem(collaboration) {
-            const listItem = document.createElement('li');
-            listItem.textContent = collaboration;
-            return listItem;
-        }
+                });
+            })
+            .catch(error => console.error('Error fetching author network:', error));
     });
-</script>
 
+    function createAuthorListItem(collaboration) {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `<span class="paper-title">${collaboration.title}</span><span class="author-info">${collaboration.authorName} rank ${collaboration.rank}</span>`;
+        return listItem;
+    }
+</script>
+</body>
 </html>

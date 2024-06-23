@@ -4,7 +4,8 @@ import com.myproject.model.Paper;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.Date;
-import org.springframework.data.jpa.domain.Specification;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 
 public class PaperSpecification {
 
@@ -22,7 +23,8 @@ public class PaperSpecification {
             if (authors == null || authors.isEmpty()) {
                 return criteriaBuilder.conjunction(); // 返回一个始终为 true 的条件，不影响查询
             } else {
-                return criteriaBuilder.like(root.get("authors"), "%" + authors + "%");
+                Join<Object, Object> paperAuthors = root.join("paperAuthors", JoinType.LEFT);
+                return criteriaBuilder.like(paperAuthors.get("author").get("name"), "%" + authors + "%");
             }
         };
     }
@@ -54,7 +56,8 @@ public class PaperSpecification {
             if (journal == null || journal.isEmpty()) {
                 return criteriaBuilder.conjunction(); // 返回一个始终为 true 的条件，不影响查询
             } else {
-                return criteriaBuilder.like(root.get("journal"), "%" + journal + "%");
+                Join<Object, Object> paperJournal = root.join("journal", JoinType.LEFT);
+                return criteriaBuilder.like(paperJournal.get("name"), "%" + journal + "%");
             }
         };
     }

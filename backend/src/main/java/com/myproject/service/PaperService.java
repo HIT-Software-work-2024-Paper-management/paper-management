@@ -22,9 +22,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.HashSet;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PaperService {
+    private static final Logger logger = LoggerFactory.getLogger(PaperService.class);
 
     @Autowired
     private PaperRepository paperRepository;
@@ -54,7 +59,7 @@ public class PaperService {
             paperAuthorRepository.save(paperAuthor);
         }
 
-        paper.setWorkloadScore(calculateWorkloadScore(savedPaper)); // 计算工作量分数
+
         return savedPaper;
     }
 
@@ -66,20 +71,61 @@ public class PaperService {
         return paperRepository.findById(id);
     }
 
+
     public void deletePaper(Long id) {
         Optional<Paper> paperOptional = paperRepository.findById(id);
         if (paperOptional.isPresent()) {
             Paper paper = paperOptional.get();
+            logger.info("Deleting related PaperAuthor records for paper ID: {}", paper.getId());
+
+            // 删除相关的 PaperAuthor 记录
+            List<PaperAuthor> paperAuthors = paper.getPaperAuthors();
+            if (paperAuthors != null && !paperAuthors.isEmpty()) {
+                for (PaperAuthor paperAuthor : paperAuthors) {
+                    try {
+                        paperAuthorRepository.delete(paperAuthor);
+                        logger.info("Deleted PaperAuthor ID: {}", paperAuthor.getId());
+                    } catch (Exception e) {
+                        logger.error("Error deleting PaperAuthor ID: {}", paperAuthor.getId(), e);
+                        throw e;
+                    }
+                }
+
+                logger.info("Associated PaperAuthors:");
+                for (PaperAuthor paperAuthor : paperAuthors) {
+                    logger.info("PaperAuthor ID: {}, Author ID: {}", paperAuthor.getId(), paperAuthor.getAuthor().getId());
+                }
+            } else {
+                logger.info("No associated PaperAuthors found.");
+            }
+
             // 删除文件
             String fileUrl = paper.getFileUrl();
             File file = new File(fileUrl);
             if (file.exists()) {
-                file.delete();
+                logger.info("Deleting file: {}", fileUrl);
+                boolean deleted = file.delete();
+                if (deleted) {
+                    logger.info("File deleted successfully");
+                } else {
+                    logger.error("Failed to delete file");
+                }
+            } else {
+                logger.warn("File not found: {}", fileUrl);
             }
+
             // 删除数据库记录
-            paperRepository.deleteById(id);
+            try {
+                paperRepository.delete(paper);
+            } catch (Exception e) {
+                logger.error("Error deleting paper with ID: {}", id, e);
+                throw e;
+            }
+        } else {
+            logger.warn("Paper with ID {} not found", id);
         }
     }
+
 
     public Paper updatePaper(Long id, Paper updatedPaper) {
         return paperRepository.findById(id).map(paper -> {
@@ -90,12 +136,10 @@ public class PaperService {
             paper.setCategory(updatedPaper.getCategory());
             paper.setFileUrl(updatedPaper.getFileUrl());
             paper.setType(updatedPaper.getType());
-            paper.setWorkloadScore(calculateWorkloadScore(updatedPaper)); // 计算工作量分数
             return paperRepository.save(paper);
         }).orElseGet(() -> {
             updatedPaper.setId(id);
             updatedPaper.setJournal(updateJournal(updatedPaper.getJournal()));
-            updatedPaper.setWorkloadScore(calculateWorkloadScore(updatedPaper)); // 计算工作量分数
             return paperRepository.save(updatedPaper);
         });
     }
@@ -179,17 +223,41 @@ public class PaperService {
     }
 
 
-    private double calculateWorkloadScore(Paper paper) {
-        double baseScore = paper.getImpactFactor();
-        double totalScore = 0.0;
 
-        for (PaperAuthor paperAuthor : paper.getPaperAuthors()) {
-            double rankMultiplier = getRankMultiplier(paperAuthor.getRank());
-            totalScore += baseScore * rankMultiplier;
+
+
+    //以下用于论文关系网络
+    public List<Paper> findPapersByAuthorName(String authorName) {
+        return paperRepository.findByAuthorsName(authorName);
+    }
+
+    public List<PaperAuthor> findAuthorsByPaperId(Long paperId) {
+        return paperAuthorRepository.findAuthorsByPaperId(paperId);
+    }
+    //以下用于计算工作量分数
+    public Paper findPaperByTitle(String title) {
+        return paperRepository.findByTitle(title);
+    }
+    public PaperAuthor findPaperAuthorByPaperAndAuthorName(Paper paper, String authorName) {
+        return paper.getPaperAuthors().stream()
+                .filter(pa -> pa.getAuthor().getName().equals(authorName))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public double calculateWorkloadScore(Paper paper, String authorName) {
+        PaperAuthor paperAuthor = findPaperAuthorByPaperAndAuthorName(paper, authorName);
+        if (paperAuthor == null) {
+            throw new IllegalArgumentException("Author not found in the paper");
         }
+        return calculateWorkloadScore(paper, paperAuthor);
+    }
 
+    private double calculateWorkloadScore(Paper paper, PaperAuthor paperAuthor) {
+        double impactFactor = paper.getImpactFactor();
+        double rankFactor = getRankMultiplier(paperAuthor.getRank());
         double journalWeight = paper.getJournal().getWeight();
-        return totalScore * journalWeight;
+        return impactFactor * journalWeight * rankFactor;
     }
 
     private double getRankMultiplier(int authorRank) {

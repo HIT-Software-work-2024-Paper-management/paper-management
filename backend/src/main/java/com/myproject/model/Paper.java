@@ -3,6 +3,7 @@ package com.myproject.model;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "papers")
@@ -46,7 +47,8 @@ public class Paper {
     @Column(name = "workload_score")
     private double workloadScore;
 
-    @OneToMany(mappedBy = "paper", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "paper")
+    @JsonManagedReference
     private List<PaperAuthor> paperAuthors; // 添加 paperAuthors 字段
 
     // Getter 和 Setter 方法

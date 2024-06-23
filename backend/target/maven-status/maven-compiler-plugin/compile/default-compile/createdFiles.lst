@@ -7,6 +7,7 @@ com\myproject\service\JournalService.class
 com\myproject\controller\CategoryController.class
 com\myproject\PaperManagementApplication.class
 com\myproject\controller\PaperController.class
+com\myproject\dto\AuthorResponse.class
 com\myproject\controller\AuthorController.class
 com\myproject\repository\AuthorRepository.class
 com\myproject\service\AuthorService.class
