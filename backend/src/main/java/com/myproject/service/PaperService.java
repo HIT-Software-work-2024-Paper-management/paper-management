@@ -162,7 +162,7 @@ public class PaperService {
     }
 
     public ByteArrayInputStream exportPapersToExcel(List<Paper> papers) throws IOException {
-        String[] columns = {"Title", "Authors", "Keywords", "Date", "Journal", "Category", "Type"};
+        String[] columns = {"Title", "Authors", "impact_factor", "Date", "Journal", "Category"};
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Papers");
@@ -183,10 +183,10 @@ public class PaperService {
                 row.createCell(1).setCellValue(paper.getAuthors().stream()
                         .map(Author::getName)
                         .reduce((a, b) -> a + "; " + b).orElse(""));
-                row.createCell(2).setCellValue(paper.getDate().toString());
-                row.createCell(3).setCellValue(paper.getJournal().getName());
-                row.createCell(4).setCellValue(paper.getCategory().getName());
-                row.createCell(5).setCellValue(paper.getType());
+                row.createCell(2).setCellValue(paper.getImpactFactor());
+                row.createCell(3).setCellValue(paper.getDate().toString());
+                row.createCell(4).setCellValue(paper.getJournal().getName());
+                row.createCell(5).setCellValue(paper.getCategory().getName());
             }
 
             workbook.write(out);

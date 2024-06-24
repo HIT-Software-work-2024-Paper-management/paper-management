@@ -4,32 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ad1ff90-0c1a-435e-843b-ff4b2a3c610c" name="更改" comment="修改了author字段，可以提交，其他相关功能待修改">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/dto/AuthorResponse.java" afterDir="false" />
+    <list default="true" id="0ad1ff90-0c1a-435e-843b-ff4b2a3c610c" name="更改" comment="基本完成功能">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/logs/spring.log" beforeDir="false" afterPath="$PROJECT_DIR$/backend/logs/spring.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/AuthorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/AuthorController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/PaperController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/controller/PaperController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/model/Paper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/model/Paper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/model/PaperAuthor.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/model/PaperAuthor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/repository/PaperAuthorRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/repository/PaperAuthorRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/repository/PaperRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/repository/PaperRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/service/PaperService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/service/PaperService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/myproject/specification/PaperSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/myproject/specification/PaperSpecification.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/static/paper_network.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/static/paper_network.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/resources/static/paper_query.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/static/paper_query.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/static/paper_score.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/static/paper_score.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/controller/PaperController.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/controller/PaperController.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/model/Paper.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/model/Paper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/repository/PaperRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/repository/PaperRepository.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/service/PaperService.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/service/PaperService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/target/classes/com/myproject/specification/PaperSpecification.class" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/com/myproject/specification/PaperSpecification.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/target/classes/static/paper_network.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/static/paper_network.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/target/classes/static/paper_query.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/static/paper_query.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/target/classes/static/paper_score.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/classes/static/paper_score.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/backend/target/paper-management-0.0.1-SNAPSHOT.jar.original" afterDir="false" />
     </list>
@@ -186,7 +171,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719023303381</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="基本完成功能">
+      <option name="closed" value="true" />
+      <created>1719152944660</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1719152944660</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -210,6 +203,7 @@
     <MESSAGE value="支持选择论文分类" />
     <MESSAGE value="支持参考文献管理" />
     <MESSAGE value="修改了author字段，可以提交，其他相关功能待修改" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改了author字段，可以提交，其他相关功能待修改" />
+    <MESSAGE value="基本完成功能" />
+    <option name="LAST_COMMIT_MESSAGE" value="基本完成功能" />
   </component>
 </project>

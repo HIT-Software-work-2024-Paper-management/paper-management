@@ -25,6 +25,7 @@
         <input type="text" id="category" name="category">
 
         <button type="submit">查询</button>
+        <button type="button" id="exportButton">导出到 Excel</button>
     </form>
     <h2>查询结果</h2>
     <ul id="paper-query-list"></ul>
@@ -47,6 +48,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('paper-query-form');
+        const exportButton = document.getElementById('exportButton');
         const paperQueryList = document.getElementById('paper-query-list');
 
         form.addEventListener('submit', event => {
@@ -89,17 +91,41 @@
                 .catch(error => console.error('Error fetching paper query:', error));
         });
 
-function createPaperListItem(paper) {
-    const listItem = document.createElement('li');
+        exportButton.addEventListener('click', () => {
+            if (!checkEmpty()) {
+                return;
+            }
+            const formData = new FormData(form);
+            const authorName = formData.get('authorName');
+            const paperName = formData.get('paperName');
+            const time = formData.get('time');
+            const publication = formData.get('publication');
+            const category = formData.get('category');
 
-    // 检查并处理 paper 对象的每个字段是否为空或未定义
-    const title = paper.title || 'No Title';
-    const authors = Array.isArray(paper.paperAuthors) ? paper.paperAuthors.map(author => author.name).join(", ") : 'No Authors';
-    const date = paper.date || 'No Date';
+            let query = `/api/papers/export?authors=${authorName}&title=${paperName}&journal=${publication}&categoryId=${category}`;
+            if (time) {
+                query += `&date=${time}`;
+            }
 
-    listItem.textContent = `${title} (${authors}, ${date})`;
-    return listItem;
-}
+            console.log(`Exporting with parameters:
+                authors=${authorName}, title=${paperName},
+                date=${time}, journal=${publication}, categoryId=${category}`);
+
+            // Trigger the file download
+            window.location.href = query;
+        });
+
+        function createPaperListItem(paper) {
+            const listItem = document.createElement('li');
+
+            // 检查并处理 paper 对象的每个字段是否为空或未定义
+            const title = paper.title || 'No Title';
+            const authors = Array.isArray(paper.paperAuthors) ? paper.paperAuthors.map(author => author.name).join(", ") : 'No Authors';
+            const date = paper.date || 'No Date';
+
+            listItem.textContent = `${title} (${authors}, ${date})`;
+            return listItem;
+        }
     });
 </script>
 

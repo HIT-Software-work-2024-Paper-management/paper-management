@@ -44,8 +44,8 @@ public class Paper {
     @Column(name = "impact_factor", nullable = false)
     private double impactFactor;
 
-    @Column(name = "workload_score")
-    private double workloadScore;
+//    @Column(name = "workload_score")
+//    private double workloadScore;
 
     @OneToMany(mappedBy = "paper")
     @JsonManagedReference
@@ -124,13 +124,13 @@ public class Paper {
         this.impactFactor = impactFactor;
     }
 
-    public double getWorkloadScore() {
-        return workloadScore;
-    }
-
-    public void setWorkloadScore(double workloadScore) {
-        this.workloadScore = workloadScore;
-    }
+//    public double getWorkloadScore() {
+//        return workloadScore;
+//    }
+//
+//    public void setWorkloadScore(double workloadScore) {
+//        this.workloadScore = workloadScore;
+//    }
 
     public List<PaperAuthor> getPaperAuthors() {
         return paperAuthors;

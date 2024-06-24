@@ -237,14 +237,12 @@ public class PaperController {
     @GetMapping("/export")
     public ResponseEntity<Resource> exportPapers(@RequestParam(value = "title", required = false) String title,
                                                  @RequestParam(value = "authors", required = false) String authors,
-                                                 @RequestParam(value = "keywords", required = false) String keywords,
                                                  @RequestParam(value = "date", required = false) Date date,
                                                  @RequestParam(value = "journal", required = false) String journal,
                                                  @RequestParam(value = "categoryId", required = false) Long categoryId,
                                                  @RequestParam(value = "type", required = false) String type) throws IOException {
         Specification<Paper> spec = Specification.where(PaperSpecification.hasTitle(title))
                 .and(PaperSpecification.hasAuthors(authors))
-                .and(PaperSpecification.hasKeywords(keywords))
                 .and(PaperSpecification.hasDate(date))
                 .and(PaperSpecification.hasJournal(journal))
                 .and(PaperSpecification.hasCategory(categoryId))
