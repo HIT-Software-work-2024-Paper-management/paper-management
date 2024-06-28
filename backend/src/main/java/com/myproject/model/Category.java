@@ -13,6 +13,8 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+//    private String name;
+    @Column(name = "name", nullable = false)
     private String name;
 
     @ManyToOne

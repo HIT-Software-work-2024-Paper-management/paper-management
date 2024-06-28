@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.nio.file.StandardCopyOption;
 
 
 @RestController
@@ -181,31 +182,96 @@ public class PaperController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Paper> updatePaper(@PathVariable Long id, @RequestBody Paper updatedPaper) {
+    public ResponseEntity<Paper> updatePaper(
+            @PathVariable Long id,
+            @RequestParam("title") String title,
+            @RequestParam Map<String, String> authorsMap,
+            @RequestParam("date") Date date,
+            @RequestParam("journal") Long journalId,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam("categoryId") Long categoryId,
+            @RequestParam("type") String type,
+            @RequestParam("impactFactor") double impactFactor) throws IOException {
+
         Optional<Paper> existingPaperOpt = paperService.getPaperById(id);
-        if (existingPaperOpt.isPresent()) {
-            Paper existingPaper = existingPaperOpt.get();
-            existingPaper.setTitle(updatedPaper.getTitle());
-            existingPaper.setAuthors(updatedPaper.getAuthors());
-            existingPaper.setDate(updatedPaper.getDate());
-            existingPaper.setCategory(updatedPaper.getCategory());
-            existingPaper.setFileUrl(updatedPaper.getFileUrl());
-            existingPaper.setType(updatedPaper.getType());
-            existingPaper.setImpactFactor(updatedPaper.getImpactFactor());
 
-            Optional<Journal> journalOpt = journalService.getJournalById(updatedPaper.getJournal().getId());
-            if (journalOpt.isPresent()) {
-                existingPaper.setJournal(journalOpt.get());
-            } else {
-                return ResponseEntity.badRequest().build();
-            }
-
-            Paper savedPaper = paperService.updatePaper(id, existingPaper);
-            return ResponseEntity.ok(savedPaper);
-        } else {
+        if (!existingPaperOpt.isPresent()) {
             return ResponseEntity.notFound().build();
         }
+
+        Paper existingPaper = existingPaperOpt.get();
+        existingPaper.setTitle(title);
+
+        // 更新作者列表
+        System.out.println("Received authorsMap: " + authorsMap);
+        System.out.println("1111111111111111111111111111111111111111111 " );
+
+        List<PaperAuthor> paperAuthors = new ArrayList<>();
+        int i = 0;
+        while (authorsMap.containsKey("authorsMap[" + i + "].id")) {
+            Long authorId = Long.parseLong(authorsMap.get("authorsMap[" + i + "].id"));
+            System.out.println("Processing authorId: " + authorId + " with rank: " + authorsMap.get("authorsMap[" + i + "].rank"));
+            Optional<Author> authorOpt = paperService.getAuthorById(authorId);
+
+            if (!authorOpt.isPresent()) {
+                return ResponseEntity.badRequest().body(null); // 如果作者不存在，返回错误
+            }
+
+            Author author = authorOpt.get();
+            PaperAuthor paperAuthor = new PaperAuthor();
+            paperAuthor.setAuthor(author);
+            paperAuthor.setRank(Integer.parseInt(authorsMap.get("authorsMap[" + i + "].rank")));
+            paperAuthor.setPaper(existingPaper);
+            paperAuthors.add(paperAuthor);
+            System.out.println("Added PaperAuthor: " + paperAuthor);
+            i++;
+        }
+        // 打印解析后的 paperAuthors 列表
+        System.out.println("11111111111111111111111111111111111111 " );
+        System.out.println("Parsed paperAuthors before setting: " + paperAuthors);
+
+        existingPaper.setPaperAuthors(paperAuthors); // 更新 paperAuthors 到 existingPaper
+        System.out.println("Parsed paperAuthors: " + existingPaper.getPaperAuthors());
+
+
+
+        // 更新其他字段
+        existingPaper.setDate(date);
+        existingPaper.setImpactFactor(impactFactor);
+        existingPaper.setType(type);
+
+        Optional<Category> categoryOpt = categoryService.getCategoryById(categoryId);
+        if (categoryOpt.isPresent()) {
+            existingPaper.setCategory(categoryOpt.get());
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<Journal> journalOpt = journalService.getJournalById(journalId);
+        if (journalOpt.isPresent()) {
+            existingPaper.setJournal(journalOpt.get());
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String filename = file.getOriginalFilename();
+        if (filename != null && !filename.isEmpty()) {
+            Path destinationFile = rootLocation.resolve(Paths.get(filename)).normalize().toAbsolutePath();
+            if (!destinationFile.startsWith(rootLocation.toAbsolutePath())) {
+                // 防止文件路径遍历攻击
+                return ResponseEntity.badRequest().build();
+            }
+            Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+            existingPaper.setFileUrl(destinationFile.toString());
+        }
+
+
+
+        Paper savedPaper = paperService.updatePaper(id, existingPaper,paperAuthors); // 调整 updatePaper 方法调用
+
+        return ResponseEntity.ok(savedPaper);
     }
+
 
     @GetMapping("/search")
     public List<Paper> searchPapers(@RequestParam(value = "title", required = false) String title,

@@ -127,19 +127,41 @@ public class PaperService {
     }
 
 
-    public Paper updatePaper(Long id, Paper updatedPaper) {
+    public Paper updatePaper(Long id, Paper updatedPaper, List<PaperAuthor> paperAuthors) {
+        System.out.println("Parsed paperAuthors In paperservice: " + updatedPaper.getPaperAuthors());
+
+//        for (PaperAuthor paperAuthor : paperAuthors) {
+//            paperAuthor.setPaper(updatedPaper);
+//            paperAuthorRepository.save(paperAuthor);
+//        }
+
         return paperRepository.findById(id).map(paper -> {
             paper.setTitle(updatedPaper.getTitle());
-            paper.setAuthors(updatedPaper.getAuthors());
+            paper.setPaperAuthors(updatedPaper.getPaperAuthors());
             paper.setDate(updatedPaper.getDate());
-            paper.setJournal(updateJournal(updatedPaper.getJournal()));
+            paper.setJournal(updatedPaper.getJournal());
             paper.setCategory(updatedPaper.getCategory());
             paper.setFileUrl(updatedPaper.getFileUrl());
             paper.setType(updatedPaper.getType());
+
+            // 清空旧的 PaperAuthors
+            paper.getPaperAuthors().clear();
+            paperRepository.save(paper);
+
+            // 保存新的 PaperAuthors
+            for (PaperAuthor paperAuthor : paperAuthors) {
+                paperAuthor.setPaper(paper);
+                paperAuthorRepository.save(paperAuthor);
+            }
+
+            // 重新设置 PaperAuthors 集合
+            paper.setPaperAuthors(updatedPaper.getPaperAuthors());
+
             return paperRepository.save(paper);
+
+
         }).orElseGet(() -> {
             updatedPaper.setId(id);
-            updatedPaper.setJournal(updateJournal(updatedPaper.getJournal()));
             return paperRepository.save(updatedPaper);
         });
     }

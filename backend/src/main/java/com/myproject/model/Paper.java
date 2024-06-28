@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.ArrayList;
+import javax.transaction.Transactional;
 
 @Entity
 @Table(name = "papers")
@@ -22,6 +24,7 @@ public class Paper {
             joinColumns = @JoinColumn(name = "paper_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
+//    @OneToMany
     private List<Author> authors;
 
     @Column(name = "date", nullable = false)
@@ -47,8 +50,9 @@ public class Paper {
 //    @Column(name = "workload_score")
 //    private double workloadScore;
 
-    @OneToMany(mappedBy = "paper")
+//    @OneToMany(mappedBy = "paper")
     @JsonManagedReference
+    @OneToMany(mappedBy = "paper", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaperAuthor> paperAuthors; // 添加 paperAuthors 字段
 
     // Getter 和 Setter 方法
@@ -136,7 +140,34 @@ public class Paper {
         return paperAuthors;
     }
 
-    public void setPaperAuthors(List<PaperAuthor> paperAuthors) {
-        this.paperAuthors = paperAuthors;
+    public void setPaperAuthors(List<PaperAuthor> newPaperAuthors) {
+        // Step 1: Clear the existing relationships
+        clearPaperAuthors();
+
+        // Step 2: Add the new relationships
+        addPaperAuthors(newPaperAuthors);
+    }
+
+    private void clearPaperAuthors() {
+        if (this.paperAuthors != null) {
+            // Detach each PaperAuthor
+            for (PaperAuthor paperAuthor : this.paperAuthors) {
+                paperAuthor.setPaper(null);
+            }
+            this.paperAuthors.clear();
+        }
+    }
+
+    private void addPaperAuthors(List<PaperAuthor> paperAuthors) {
+        if (paperAuthors != null) {
+            for (PaperAuthor paperAuthor : paperAuthors) {
+                addPaperAuthor(paperAuthor);
+            }
+        }
+    }
+
+    public void addPaperAuthor(PaperAuthor paperAuthor) {
+        paperAuthor.setPaper(this);
+        this.paperAuthors.add(paperAuthor);
     }
 }
